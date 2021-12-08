@@ -4,10 +4,6 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Arquivos de Cabeçalho"
                    projectFiles="true">
-      <itemPath>NAOUSADO comandosAuxiliares.h</itemPath>
-      <itemPath>NAOUSADO comandosDaCortina.h</itemPath>
-      <itemPath>NAOUSADO servosDaCortina.h</itemPath>
-      <itemPath>NAOUSADO wifiSetup.h</itemPath>
       <itemPath>Servo360.h</itemPath>
       <itemPath>ServoPonteH.h</itemPath>
       <itemPath>defines.h</itemPath>
@@ -45,14 +41,6 @@
       </compileType>
       <item path="Cortina.ino" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="NAOUSADO comandosAuxiliares.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="NAOUSADO comandosDaCortina.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="NAOUSADO servosDaCortina.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="NAOUSADO wifiSetup.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="Servo360.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="ServoPonteH.h" ex="false" tool="3" flavor2="0">
@@ -81,14 +69,6 @@
         </asmTool>
       </compileType>
       <item path="Cortina.ino" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="NAOUSADO comandosAuxiliares.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="NAOUSADO comandosDaCortina.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="NAOUSADO servosDaCortina.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="NAOUSADO wifiSetup.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="Servo360.h" ex="false" tool="3" flavor2="0">
       </item>

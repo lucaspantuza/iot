@@ -11,11 +11,6 @@ Servo360 servoComprimento(ACAO_CORTINA_COMPRIMENTO);
 Servo360 servoBlackout(ACAO_CORTINA_BLACKOUT);
 ServoPonteH servoAba(ACAO_CORTINA_ABA1, ACAO_CORTINA_ABA2);
 
-
-//Controle de panico
-bool isPanic = false;
-unsigned long isPanicMillis = 0;
-
 //Ultimo print millis
 unsigned long isPrintMillis = 0;
 
@@ -26,9 +21,6 @@ void setup() {
     // Inicia a Serial
     Serial.begin(SERIAL_BAUDRATE);
     Serial.println();
-
-    //Comandos - chaves fisicas
-    pinMode(COM_PANIC, INPUT_PULLUP);
 
     //Pinagem do projeto
     pinMode(SEN_CORTINA_POTENCIOMETRO_ABAS, INPUT);
@@ -54,74 +46,90 @@ void setup() {
 
 void loop() {
 
-    if (digitalRead(COM_PANIC) == LOW) {
-        setPanic();
-    }
-
     // acoes do IR
     if (IrReceiver.decode()) {
+        int pos_original;
+        
         switch (IrReceiver.decodedIRData.command) {
 
-            case CR_DIA: //arreganha tudo
+            case CR_ABRE_TUDO: //arreganha tudo
+                Serial.println("CR_ABRE_TUDO");
                 blackout_abrir();
-                cortina_abrir(); //ja manda aba pra 90
+                cortina_aba_para_valor(90);
+                cortina_abrir(); 
                 break;
-            case CR_LUZDIA: //deixa veneziana fechada a 45
+            case CR_LUZ_DIARIA: //deixa veneziana fechada a 45
+                Serial.println("CR_LUZ_DIARIA");
+                blackout_abrir();
+                cortina_aba_para_valor(90);
+                cortina_fechar();
                 cortina_aba_para_valor(45);
-                blackout_abrir();
                 break;
-            case CR_NOITE:
-                blackout_fechar();
+            case CR_FECHA_TUDO:
+                Serial.println("CR_FECHA_TUDO");
+                cortina_aba_para_valor(90);
                 cortina_fechar();
                 cortina_aba_para_valor(0);
+                blackout_fechar();
                 break;
 
+                
             case CR_CORTINA_ABRIR:
+                Serial.println("CR_CORTINA_ABRIR");
+                pos_original = cortina_aba_para_valor(90);
                 cortina_abrir();
+                cortina_aba_para_valor(pos_original);
                 break;
             case CR_CORTINA_MEIO:
+                Serial.println("CR_CORTINA_MEIO");
+                pos_original = cortina_aba_para_valor(90);
                 cortina_semi_abrir();
+                cortina_aba_para_valor(pos_original);
                 break;
             case CR_CORTINA_FECHAR:
+                Serial.println("CR_CORTINA_FECHAR");
+                pos_original = cortina_aba_para_valor(90);
                 cortina_fechar();
+                cortina_aba_para_valor(pos_original);
                 break;
 
+                
             case CR_ABAS_000g:
-                Serial.println("cortina_aba_0");
+                Serial.println("CR_ABAS_000g");
                 cortina_aba_para_valor(0);
                 break;
             case CR_ABAS_045g:
-                Serial.println("cortina_aba_45");
+                Serial.println("CR_ABAS_045g");
                 cortina_aba_para_valor(45);
                 break;
             case CR_ABAS_090g:
-                Serial.println("cortina_aba_90");
+                Serial.println("CR_ABAS_090g");
                 cortina_aba_para_valor(90);
                 break;
             case CR_ABAS_135g:
-                Serial.println("cortina_aba_135");
+                Serial.println("CR_ABAS_135g");
                 cortina_aba_para_valor(135);
                 break;
             case CR_ABAS_180g:
-                Serial.println("cortina_aba_180");
+                Serial.println("CR_ABAS_180g");
                 cortina_aba_para_valor(180);
                 break;
 
+                
             case CR_BLACKOUT_ABRIR:
+                Serial.println("CR_BLACKOUT_ABRIR");
                 blackout_abrir();
                 break;
             case CR_BLACKOUT_MEIO:
+                Serial.println("CR_BLACKOUT_MEIO");
                 blackout_semi_abrir();
                 break;
             case CR_BLACKOUT_FECHAR:
+                Serial.println("CR_BLACKOUT_FECHAR");
                 blackout_fechar();
                 break;
-                
-            case CR_PANIC:
-                setPanic();
-                printSensoresForce(true);
-                break;
 
+                
             default:
                 printSensoresForce(true);
         }
@@ -160,18 +168,7 @@ void printSensoresForce(bool force) {
     Serial.print(" ABA analogic config MAX.....: ");
     Serial.println(analogRead(SEN_CORTINA_POTENCIOMETRO_ABAS_CONFIG_MAX));
     Serial.print(" ABA analogic convertido.....: ");
-    //    Serial.print(CONFIG_CORTINA_POTENCIOMETRO_ABAS_VALOR_MIN);
-    //    Serial.print("~");
-    //    Serial.print(CONFIG_CORTINA_POTENCIOMETRO_ABAS_VALOR_MAX);
-    //    Serial.print(": ");
     Serial.println(le_potenciometro_aba());
-    Serial.println("-");
-    Serial.print(" COM_PANIC.......: ");
-    Serial.println(digitalRead(COM_PANIC));
-    Serial.print(" funcao isntPanicTime(): ");
-    Serial.println(isntPanicTime());
-    Serial.print(" variavel isPanic: ");
-    Serial.println(isPanic);
     Serial.println("-");
     Serial.print(" SEN_CORTINA_INICIO: ");
     Serial.println(digitalRead(SEN_CORTINA_INICIO));
@@ -192,40 +189,6 @@ void printSensoresForce(bool force) {
     Serial.println();
 }
 
-void setPanic() {
-    isPanic = true;
-    isPanicMillis = millis();
-
-    Serial.println("PANIC!");
-}
-
-bool isntPanicTime() {
-    return !isPanicTime();
-}
-
-bool isPanicTime() {
-
-    //Panic pelo botao
-    if (digitalRead(COM_PANIC) == LOW) {
-        setPanic();
-    }
-
-    //Panic pelo controle
-    if (IrReceiver.decode()) {
-        if (IrReceiver.decodedIRData.command == CR_PANIC) {
-            setPanic();
-        }
-        IrReceiver.resume();
-    }
-
-    // Atualiza a valiavel caso ela esteja obsoleta
-    if (isPanic && millis() - isPanicMillis > PANIC_OBSOLETO) {
-        isPanic = false;
-    }
-
-    return isPanic;
-}
-
 //---
 
 int le_potenciometro_aba() {
@@ -242,26 +205,26 @@ int le_potenciometro_aba() {
             180);
 }
 
-void cortina_aba_para_valor(int valor) {
+int cortina_aba_para_valor(int valor) {
 
+    // Guarda para retorno da funcao
+    int pot_original = le_potenciometro_aba();
+    
     if ((valor == 0 || valor == 180) && digitalRead(SEN_CORTINA_FIM) != LOW) {
-        Serial.println("So pode girar com cortina fechada para esse valor (0 ou 180)");
+        //So pode girar com cortina fechada para esse valor (0 ou 180)
         return;
     } else if ((valor == 45 || valor == 135) && digitalRead(SEN_CORTINA_FIM) != LOW && digitalRead(SEN_CORTINA_MEIO) != LOW) {
-        Serial.println("So pode girar com cortina semiaberta/fechada para esse valor (45 ou 135)");
+        //So pode girar com cortina semiaberta/fechada para esse valor (45 ou 135)
         return;
     }
 
-    Serial.print("vai para: ");
-    Serial.println(valor);
-
-    int pot = le_potenciometro_aba();
+    int pot = pot_original;
 
     // Se ja estiver fechado
     if (pot >= (valor - FAIXA_SEGURANCA_VALOR_ANALOGIC) && pot <= (valor + FAIXA_SEGURANCA_VALOR_ANALOGIC)) return;
 
     // direcao A do servo
-    while (pot > valor && isntPanicTime()) {
+    while (pot > valor) {
         servoAba.goB();
         delay(TEMPO_LOOP_MILLIS);
         pot = le_potenciometro_aba();
@@ -269,25 +232,21 @@ void cortina_aba_para_valor(int valor) {
     servoAba.stop();
 
     // direcao B do servo
-    while (pot < valor && isntPanicTime()) {
+    while (pot < valor) {
         servoAba.goA();
         delay(TEMPO_LOOP_MILLIS);
         pot = le_potenciometro_aba();
     }
     servoAba.stop();
 
+    return pot_original;
 }
 
 //---
 
 void cortina_abrir() {
-    Serial.println("cortina_abrir");
-
-    // Primeiro abre as abas para deslocamento
-    cortina_aba_para_valor(90);
-
     // direcao A do servo
-    while (digitalRead(SEN_CORTINA_INICIO) != LOW && isntPanicTime()) {
+    while (digitalRead(SEN_CORTINA_INICIO) != LOW) {
         servoComprimento.goA();
         delay(TEMPO_LOOP_MILLIS);
     }
@@ -295,88 +254,84 @@ void cortina_abrir() {
 }
 
 void cortina_fechar() {
-    Serial.println("cortina_fechar");
-
-    // Primeiro abre as abas para deslocamento
-    cortina_aba_para_valor(90);
-
     // direcao B do servo
-    while (digitalRead(SEN_CORTINA_FIM) != LOW && isntPanicTime()) {
+    while (digitalRead(SEN_CORTINA_FIM) != LOW) {
         servoComprimento.goB();
         delay(TEMPO_LOOP_MILLIS);
     }
     servoComprimento.stop();
-
-    // Por fim, fecha as abas
-    //    cortina_fechar_aba();
 }
 
 void cortina_semi_abrir() {
-    Serial.println("cortina_semi_abrir");
-
-    cortina_aba_para_valor(90);
-
     if (digitalRead(SEN_CORTINA_INICIO) == LOW) {
-        while (digitalRead(SEN_CORTINA_MEIO) != LOW && isntPanicTime()) {
+        while (digitalRead(SEN_CORTINA_MEIO) != LOW) {
             servoComprimento.goB();
             delay(TEMPO_LOOP_MILLIS);
         }
         servoComprimento.stop();
     } else if (digitalRead(SEN_CORTINA_FIM) == LOW) {
-        while (digitalRead(SEN_CORTINA_MEIO) != LOW && isntPanicTime()) {
+        while (digitalRead(SEN_CORTINA_MEIO) != LOW) {
             servoComprimento.goA();
             delay(TEMPO_LOOP_MILLIS);
         }
         servoComprimento.stop();
     } else {
         // neste caso a cortina esta parada no limbo. Abre tudo pra depois ir pro meio
-        Serial.println("primeiro abre pra depois mandar parar no meio");
-        cortina_abrir();
-        cortina_semi_abrir();
+        // direcao A do servo (abre ate o inicio ou meio, o que acontecer primeiro)
+        while (digitalRead(SEN_CORTINA_INICIO) != LOW && digitalRead(SEN_CORTINA_MEIO) != LOW) {
+            servoComprimento.goA();
+            delay(TEMPO_LOOP_MILLIS);
+        }
+        servoComprimento.stop();
+
+        // Caso tenha precisado ir ate o inicio, agora vai pra metade
+        if (digitalRead(SEN_CORTINA_INICIO) == LOW)
+            cortina_semi_abrir();
     }
 }
 
 //---
 
 void blackout_abrir() {
-    Serial.print("CR_BLACKOUT_ABRIR");
-
-    while (digitalRead(SEN_BLACKOUT_INICIO) != LOW && isntPanicTime()) {
+    while (digitalRead(SEN_BLACKOUT_INICIO) != LOW) {
         servoBlackout.goB();
         delay(TEMPO_LOOP_MILLIS);
     }
     servoBlackout.stop();
 }
 
+void blackout_fechar() {
+    while (digitalRead(SEN_BLACKOUT_FIM) != LOW) {
+        servoBlackout.goA();
+        delay(TEMPO_LOOP_MILLIS);
+    }
+    servoBlackout.stop();
+}
+
 void blackout_semi_abrir() {
-    Serial.print("CR_BLACKOUT_MEIO");
     if (digitalRead(SEN_BLACKOUT_INICIO) == LOW) {
-        while (digitalRead(SEN_BLACKOUT_MEIO) != LOW && isntPanicTime()) {
+        while (digitalRead(SEN_BLACKOUT_MEIO) != LOW) {
             servoBlackout.goA();
             delay(TEMPO_LOOP_MILLIS);
         }
         servoBlackout.stop();
     } else if (digitalRead(SEN_BLACKOUT_FIM) == LOW) {
-        while (digitalRead(SEN_BLACKOUT_MEIO) != LOW && isntPanicTime()) {
+        while (digitalRead(SEN_BLACKOUT_MEIO) != LOW) {
             servoBlackout.goB();
             delay(TEMPO_LOOP_MILLIS);
         }
         servoBlackout.stop();
     } else {
         // neste caso a cortina esta parada no limbo. Abre tudo pra depois ir pro meio
-        Serial.println("primeiro abre pra depois mandar parar no meio");
-        blackout_abrir();
-        blackout_semi_abrir();
-    }
-}
+        // (abre ate o inicio ou meio, o que acontecer primeiro)
+        while (digitalRead(SEN_BLACKOUT_INICIO) != LOW && digitalRead(SEN_BLACKOUT_MEIO) != LOW) {
+            servoBlackout.goB();
+            delay(TEMPO_LOOP_MILLIS);
+        }
+        servoBlackout.stop();
 
-void blackout_fechar() {
-    Serial.print("CR_BLACKOUT_FECHAR");
-
-    while (digitalRead(SEN_BLACKOUT_FIM) != LOW && isntPanicTime()) {
-        servoBlackout.goA();
-        delay(TEMPO_LOOP_MILLIS);
-        printSensores();
+        // Caso tenha precisado ir ate o inicio, agora vai pra metade
+        if (digitalRead(SEN_BLACKOUT_INICIO) == LOW)
+            blackout_semi_abrir();
     }
-    servoBlackout.stop();
 }

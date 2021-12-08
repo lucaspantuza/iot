@@ -4,13 +4,11 @@
 
 #define TEMPO_LOOP_MILLIS 100 //em milis
 #define TEMPO_ENTRE_PRINT 2000 //em milis
-#define PANIC_OBSOLETO 5000 //em milis
 #define FAIXA_SEGURANCA_VALOR_ANALOGIC 20
 
 //---
 
 //NANO
-#define COM_PANIC 2
 #define SEN_IR A4
 #define SEN_CORTINA_POTENCIOMETRO_ABAS A5
 #define SEN_CORTINA_POTENCIOMETRO_ABAS_CONFIG_MIN A7
@@ -31,9 +29,9 @@
 
 //
 //// linha 1
-#define CR_DIA 69//0xFFA25D
-#define CR_LUZDIA 70//0xFF629D
-#define CR_NOITE 71//0xFFE21D
+#define CR_ABRE_TUDO 69//0xFFA25D
+#define CR_LUZ_DIARIA 70//0xFF629D
+#define CR_FECHA_TUDO 71//0xFFE21D
 //
 //// linha 2
 //#define CR_CORTINA_MAIS 68//0xFF22DD
@@ -62,5 +60,5 @@
 //
 //// linha 7
 //#define CR_PANIC1 66//0xFF42BD
-#define CR_PANIC 82//0xFF4AB5
+//#define CR_LOG 82//0xFF4AB5
 //#define CR_PANIC3 74//0xFF52AD
