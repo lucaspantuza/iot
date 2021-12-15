@@ -49,14 +49,14 @@ void loop() {
     // acoes do IR
     if (IrReceiver.decode()) {
         int pos_original;
-        
+
         switch (IrReceiver.decodedIRData.command) {
 
             case CR_ABRE_TUDO: //arreganha tudo
                 Serial.println("CR_ABRE_TUDO");
                 blackout_abrir();
                 cortina_aba_para_valor(90);
-                cortina_abrir(); 
+                cortina_abrir();
                 break;
             case CR_LUZ_DIARIA: //deixa veneziana fechada a 45
                 Serial.println("CR_LUZ_DIARIA");
@@ -73,7 +73,7 @@ void loop() {
                 blackout_fechar();
                 break;
 
-                
+
             case CR_CORTINA_ABRIR:
                 Serial.println("CR_CORTINA_ABRIR");
                 pos_original = cortina_aba_para_valor(90);
@@ -93,7 +93,7 @@ void loop() {
                 cortina_aba_para_valor(pos_original);
                 break;
 
-                
+
             case CR_ABAS_000g:
                 Serial.println("CR_ABAS_000g");
                 cortina_aba_para_valor(0);
@@ -115,7 +115,7 @@ void loop() {
                 cortina_aba_para_valor(180);
                 break;
 
-                
+
             case CR_BLACKOUT_ABRIR:
                 Serial.println("CR_BLACKOUT_ABRIR");
                 blackout_abrir();
@@ -129,7 +129,7 @@ void loop() {
                 blackout_fechar();
                 break;
 
-                
+
             default:
                 printSensoresForce(true);
         }
@@ -208,35 +208,48 @@ int le_potenciometro_aba() {
 int cortina_aba_para_valor(int valor) {
 
     // Guarda para retorno da funcao
-    int pot_original = le_potenciometro_aba();
+    int pot, pot_original;
+    pot = pot_original = le_potenciometro_aba();
+
+    //--- Situacoes que a movimentacao nao pode acontecer
     
+    // So pode girar com cortina fechada para esse valor (0 ou 180)
     if ((valor == 0 || valor == 180) && digitalRead(SEN_CORTINA_FIM) != LOW) {
-        //So pode girar com cortina fechada para esse valor (0 ou 180)
-        return;
-    } else if ((valor == 45 || valor == 135) && digitalRead(SEN_CORTINA_FIM) != LOW && digitalRead(SEN_CORTINA_MEIO) != LOW) {
-        //So pode girar com cortina semiaberta/fechada para esse valor (45 ou 135)
         return;
     }
 
-    int pot = pot_original;
-
-    // Se ja estiver fechado
-    if (pot >= (valor - FAIXA_SEGURANCA_VALOR_ANALOGIC) && pot <= (valor + FAIXA_SEGURANCA_VALOR_ANALOGIC)) return;
-
-    // direcao A do servo
-    while (pot > valor) {
-        servoAba.goB();
-        delay(TEMPO_LOOP_MILLIS);
-        pot = le_potenciometro_aba();
+    // So pode girar com cortina semiaberta/fechada para esse valor (45 ou 135)
+    if ((valor == 45 || valor == 135) && digitalRead(SEN_CORTINA_FIM) != LOW && digitalRead(SEN_CORTINA_MEIO) != LOW) {
+        return;
     }
-    servoAba.stop();
 
-    // direcao B do servo
-    while (pot < valor) {
-        servoAba.goA();
-        delay(TEMPO_LOOP_MILLIS);
-        pot = le_potenciometro_aba();
+    // Se já estiver na posicao solicitada (dentro da faixa de seguranca), retorna sem fazer nada
+    if (pot >= (valor - FAIXA_SEGURANCA_VALOR_ANALOGIC_VERIFICACAO) && pot <= (valor + FAIXA_SEGURANCA_VALOR_ANALOGIC_VERIFICACAO)) {
+        return;
     }
+    
+    //---
+
+    // Essa condicao impede que ambos os lacos sejam executados
+    if (pot > valor) {
+
+        // direcao A do servo  
+        while (pot > valor) {
+            servoAba.goB();
+            delay(TEMPO_LOOP_MILLIS);
+            pot = le_potenciometro_aba();
+        }
+    } else {
+
+        // direcao B do servo
+        while (pot < valor) {
+            servoAba.goA();
+            delay(TEMPO_LOOP_MILLIS);
+            pot = le_potenciometro_aba();
+        }
+    }
+
+    // Finaliza a acao do servo independente da direcao que tenha sido tomada
     servoAba.stop();
 
     return pot_original;
