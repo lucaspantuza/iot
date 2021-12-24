@@ -4,6 +4,7 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Arquivos de Cabeçalho"
                    projectFiles="true">
+      <itemPath>Log.h</itemPath>
       <itemPath>Servo360.h</itemPath>
       <itemPath>ServoPonteH.h</itemPath>
       <itemPath>defines.h</itemPath>
@@ -41,6 +42,8 @@
       </compileType>
       <item path="Cortina.ino" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="Log.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="Servo360.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="ServoPonteH.h" ex="false" tool="3" flavor2="0">
@@ -69,6 +72,8 @@
         </asmTool>
       </compileType>
       <item path="Cortina.ino" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Log.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="Servo360.h" ex="false" tool="3" flavor2="0">
       </item>

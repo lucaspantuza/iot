@@ -2,13 +2,14 @@
 #define SERVO360_H
 
 #include <Servo.h> 
+#include <Arduino.h>
 
-#define SERVO360_H_VALORPARADO 90
-#define SERVO360_H_VALORMAX 270
+//#define SERVO360_H_VALORPARADO 90
+#define SERVO360_H_VALORMAX 180
 #define SERVO360_H_VALORMIN 0
-#define SERVO360_H_DELAY 50
-#define SERVO360_H_ACELERAR false
-
+//#define SERVO360_H_DELAY 50
+//#define SERVO360_H_ACELERAR false
+#define SERVO360_H_TEMPOPOSATTACH 500
 
 class Servo360 {
 private:
@@ -17,8 +18,9 @@ private:
     int pino;
     //    int posicao;
     bool isAtuando;
-    
-    
+    bool direcaoInvertida;
+
+
     //    void liga(){
     //        if(!isAtuando) s.attach(this->pino);
     //    }
@@ -29,48 +31,52 @@ private:
     //    }
 public:
 
-    Servo360(int pino) {
+    Servo360(int pino, bool direcaoInvertida = false) {
         this->pino = pino;
-        //        this->posicao = 0;
-        //        s.attach(this->pino); //ASSOCIAÇÃO DO PINO DIGITAL AO OBJETO DO TIPO SERVO
-        //        s.write(90); //INICIA O MOTOR NA POSIÇÃO 0º  
-        //        s.detach();
+        this->direcaoInvertida = direcaoInvertida;
+        pinMode(this->pino, OUTPUT);
         this->isAtuando = false;
     }
 
     void stop() {
-        s.detach();
+        //        if (this->isAtuando) {
+        this->s.detach();
+        delay(SERVO360_H_TEMPOPOSATTACH);
         this->isAtuando = false;
+        //        }
     }
 
     void goA() {
 
-        if (!isAtuando) {
-            s.attach(this->pino);
+        if (!this->isAtuando) {
+            this->s.attach(this->pino);
+            delay(SERVO360_H_TEMPOPOSATTACH);
             this->isAtuando = true;
 
-            //aceleracao
-            for (int posicao = SERVO360_H_VALORPARADO; SERVO360_H_ACELERAR && posicao < SERVO360_H_VALORMAX; posicao++) {
-                s.write(posicao);
-                delay(SERVO360_H_DELAY);
-            }
-        } else
-            s.write(SERVO360_H_VALORMAX);
+            //            //aceleracao
+            //            for (int posicao = SERVO360_H_VALORPARADO; SERVO360_H_ACELERAR && posicao < SERVO360_H_VALORMAX; posicao++) {
+            //                this->s.write(posicao);
+            //                delay(SERVO360_H_DELAY);
+            //            }
+        } //else
+
+        this->s.write((!direcaoInvertida) ? SERVO360_H_VALORMAX : SERVO360_H_VALORMIN);
     }
 
     void goB() {
-        
-        if (!isAtuando) {
-            s.attach(this->pino);
+
+        if (!this->isAtuando) {
+            this->s.attach(this->pino);
+            delay(SERVO360_H_TEMPOPOSATTACH);
             this->isAtuando = true;
 
-            //aceleracao
-            for (int posicao = SERVO360_H_VALORPARADO; SERVO360_H_ACELERAR && posicao > SERVO360_H_VALORMIN; posicao--) {
-                s.write(posicao);
-                delay(SERVO360_H_DELAY);
-            }
-        } else
-            s.write(SERVO360_H_VALORMIN);
+            //            //aceleracao
+            //            for (int posicao = SERVO360_H_VALORPARADO; SERVO360_H_ACELERAR && posicao > SERVO360_H_VALORMIN; posicao--) {
+            //                this->s.write(posicao);
+            //                delay(SERVO360_H_DELAY);
+            //            }
+        } //else
+        this->s.write((!direcaoInvertida) ? SERVO360_H_VALORMIN : SERVO360_H_VALORMAX);
     }
 };
 

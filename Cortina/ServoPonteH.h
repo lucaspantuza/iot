@@ -29,9 +29,11 @@ public:
 
     void goA() {
         digitalWrite(this->pino1, HIGH);
+        digitalWrite(this->pino2, LOW);
     }
 
     void goB() {
+        digitalWrite(this->pino1, LOW);
         digitalWrite(this->pino2, HIGH);
     }
 };
