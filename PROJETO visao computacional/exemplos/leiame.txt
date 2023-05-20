@@ -1,0 +1,11 @@
+# preparacao para cv e tensorflow
+
+# arualiza o pip
+# python.exe -m pip install --upgrade pip
+
+# instala o cv e tensorflow
+# pip install opencv-python
+# pip install tensorflow==2.12.*
+
+# adicionei os scripts no PATH do Windows
+# C:\Users\lucas\AppData\Roaming\Python\Python311\Scripts
