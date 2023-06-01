@@ -1,7 +1,5 @@
+#include <RH_ASK.h>
 #include <SPI.h>
-#include <nRF24L01.h>
-#include <RF24.h>
-
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
@@ -9,10 +7,9 @@
 #include <DHT.h>
 #include <DHT_U.h>
 
-#define DELAY_LOOP 2000
 
-RF24 radio(4, 5);  // CE, CSN
-const byte address[6] = "00001";
+
+#define DELAY_LOOP 2000
 
 
 
@@ -34,6 +31,13 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 DHT_Unified dht(SENSOR_TEMPERATURA, DHT11);  // configurando o Sensor DHT - pino e tipo
 float umidade = 0;
 float temperatura = 0;
+
+
+
+//Which will initialise the driver at 2000 bps, recieve on GPIO2, transmit on GPIO4, PTT on GPIO5
+#define RF_TRANSMISSOR 18
+#define RF_RECEPTOR 5
+RH_ASK driver(2000, RF_RECEPTOR, RF_TRANSMISSOR);  // 200bps, TX on D3 (pin 2), RX on D4 (pin 3)
 
 
 
@@ -102,12 +106,11 @@ void setup() {
       ;  // Don't proceed, loop forever
   }
 
-
-  radio.begin();
-  radio.openWritingPipe(address);
-  radio.setPALevel(RF24_PA_MAX);
-  radio.stopListening();
+  //INICIALIZA A COMUNICAÇÃO RF DO DRIVER
+  if (!driver.init())
+    Serial.println("init RF failed");
 }
+
 
 int cont = 0;  //esse contador eh apenas para testar, na vida real ele iria estourar rapido
 void loop() {
@@ -168,8 +171,9 @@ void loop() {
   Serial.println(buffer);
   Serial.println();
 
-
-  radio.write(&buffer, sizeof(buffer));
+  // Envia mensagem via radio
+  driver.send((uint8_t *)buffer, strlen(buffer));  //ENVIA AS INFORMAÇÕES PARA O RECEPTOR (PALAVRA: led)
+  driver.waitPacketSent();                         //AGUARDA O ENVIO DAS INFORMAÇÕES
 
   //-------------
 

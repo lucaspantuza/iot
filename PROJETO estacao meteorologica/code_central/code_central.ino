@@ -1,10 +1,11 @@
-#include <RH_ASK.h>
 #include <SPI.h>
+#include <nRF24L01.h>
+#include <RF24.h>
+
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
-
-
+#include <Adafruit_Sensor.h>
 
 
 
@@ -22,15 +23,8 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 
 
-
-
-
-//Which will initialise the driver at 2000 bps, recieve on GPIO2, transmit on GPIO4, PTT on GPIO5
-#define RF_TRANSMISSOR 18
-#define RF_RECEPTOR 5
-// RH_ASK driver(2000, RF_TRANSMISSOR, 11, 5);  //CRIA O DRIVER PARA COMUNICAÇÃO
-RH_ASK driver(2000, RF_RECEPTOR, RF_TRANSMISSOR);  // 200bps, TX on D3 (pin 2), RX on D4 (pin 3)
-String str = "";                                   //VARIÁVEL DO TIPO STRING
+RF24 radio(4, 5);  // CE, CSN
+const byte address[6] = "00001";
 
 
 void setup() {
@@ -57,9 +51,10 @@ void setup() {
 
 
 
-  //INICIALIZA A COMUNICAÇÃO RF DO DRIVER
-  if (!driver.init())
-    Serial.println("init RF failed");
+  radio.begin();
+  radio.openReadingPipe(0, address);
+  radio.setPALevel(RF24_PA_MAX);
+  radio.startListening();
 }
 
 void loop() {
@@ -67,16 +62,10 @@ void loop() {
   //-------------
 
 
-
-  // Recebe mensagem via radio
-  uint8_t buf[RH_ASK_MAX_MESSAGE_LEN];  //LÊ A MENSAGEM RECEBIDA (PALAVRA: led)
-  uint8_t buflen = sizeof(buf);         //CRIA O COMPRIMENTO DO BUFFER PARA O TAMANHO DE buf
-
-  if (driver.recv(buf, &buflen)) {      //SE O DRIVER RECEBEU buf(INTEIRO) E buflen (COMPRIMENTO DE DADOS), FAZ
-    str = "";                           //VARIÁVEL RECEBE VAZIO
-    for (int i = 0; i < buflen; i++) {  //PARA i IGUAL A 0, ENQUANTO i MENOR QUE buflen, INCREMENTA i
-      str += (char)buf[i];              //VARIÁVEL RECEBE OS CARACTERES E FORMA A PALAVRA
-    }
+  if (radio.available()) {
+    char text[32] = "";
+    radio.read(&text, sizeof(text));
+    Serial.println(text);
 
 
     //Imprime a mensagem recebida no display OLED
@@ -86,13 +75,17 @@ void loop() {
     display.println("- MENSAGEM RECEBIDA -");
     display.println("---------------------");
     display.println();
-    display.println(str);
+    display.println(text);
     display.display();
 
     //Imprime a mensagem recebida no terminal
     Serial.print("Msg. ");
-    Serial.println(str);
+    Serial.println(text);
   }
+
+
+
+
 
   //-------------
 
