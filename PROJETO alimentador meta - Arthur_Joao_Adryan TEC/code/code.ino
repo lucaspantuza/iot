@@ -1,3 +1,7 @@
+int HORA = 16;
+int MINUTO = 47;
+int SEGUNDO = 00;
+
 //motor
 #include <Stepper.h>
 
@@ -6,21 +10,28 @@
 #include <Adafruit_GFX.h>     
 #include <Adafruit_SSD1306.h>  
 
+//nrF24
+#include <SPI.h>
+#include <nRF24L01.h>
+#include <RF24.h>
+
 //relogio
 #include "RTCDS1307.h"
 
 //-------------------
+RF24 radio(8, 10);  // CE, CSN
+const byte address[6] = "00001";
 
 const int PassoPorVolta = 500;
-const int BOTAO = 12;
+const int BOTAO = 3;
 
-Stepper MotorP(PassoPorVolta, 8, 10, 9, 11);
+Stepper MotorP(PassoPorVolta, 4, 6, 5, 7);
 Adafruit_SSD1306 display = Adafruit_SSD1306();
 RTCDS1307 rtc(0x68);
 
 uint8_t year, month, weekday, day, hour, minute, second;
 bool period = 0;
-String m[12] = { "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro" };
+String m[12] = { "Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez" };
 String w[7] = { "Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado" };
 
 //-------------------
@@ -42,6 +53,11 @@ void setup() {
   // para acertar o relogio, descomente as linhas abaixo e atualize seus valores com os atuais
   // rtc.setDate(23, 8, 17);
   // rtc.setTime(4, 8, 50);
+
+  radio.begin();
+  radio.openWritingPipe(address);
+  radio.setPALevel(RF24_PA_MAX);
+  radio.stopListening();
 }
 
 //-------------------
@@ -54,12 +70,14 @@ void loop() {
     Serial.println("press");
     MotorP.step(682 * 2);
     delay(1000);
+    
   }
-
+ 
 
   //pega novas informacoes de relogio atualizadas
   rtc.getDate(year, month, day, weekday);
   rtc.getTime(hour, minute, second, period);
+  minute = minute - 3;
 
 
   //imprime no display
@@ -68,9 +86,9 @@ void loop() {
   display.print(w[weekday - 1]);
   display.setCursor(10, 12);
   display.print(day, DEC);
-  display.print(" / ");
+  display.print(" de ");
   display.print(m[month - 1]);
-  display.print(" / ");
+  display.print(" de ");
   display.print(year + 2000, DEC);
   display.setCursor(10, 24);
   display.print("   ");
@@ -82,6 +100,14 @@ void loop() {
   display.print(":");
   if (second <= 9) display.print("0");
   display.print(second, DEC);
-  display.print(period ? " PM" : " AM");
   display.display();
+
+    if ((hour == HORA) && (minute == MINUTO) && (second == SEGUNDO)) {  
+      display.clearDisplay();
+      display.setCursor(10, 0);
+      display.print("IT'S FEEDING TIME!");
+      display.display();
+      MotorP.step(682 * 2);
+      delay(5000);
+    }                              
 }
