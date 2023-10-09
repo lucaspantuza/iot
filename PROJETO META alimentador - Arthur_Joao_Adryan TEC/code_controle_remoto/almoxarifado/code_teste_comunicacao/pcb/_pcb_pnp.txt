@@ -1,0 +1,59 @@
+*Pick And Place List
+*Company=
+*Author=
+*eMail=
+*
+*Project=_pcb
+*Date=17:35:12
+*CreatedBy=Fritzing 0.9.3b.04.19.5c895d327c44a3114e5fcc9d8260daf0cbb52806
+*
+*
+*Coordinates in mm, always center of component
+*Origin 0/0=Lower left corner of PCB
+*Rotation in degree (0-360, math. pos.)
+*
+*No;Value;Package;X;Y;Rotation;Side;Name
+1;;THT;16.1373;-45.7267;0;Bottom;J49
+2;;5 mm [THT];37.1483;-16.7706;90;Bottom;LED7
+3;;THT;32.9665;-45.7267;0;Bottom;J50
+4;;THT;25.2717;-7.62674;0;Bottom;J29
+5;;THT;15.1117;-7.62674;0;Bottom;J28
+6;;THT;20.1917;-7.62674;0;Bottom;J33
+7;;THT;12.5717;-7.62674;0;Bottom;J34
+8;;THT;40.6068;-45.7267;0;Bottom;J17
+9;;THT;3.43729;-45.7267;0;Bottom;J11
+10;;THT;21.2173;-45.7267;0;Bottom;J44
+11;;[THT];41.2471;-24.6967;-90;Bottom;S2
+12;;THT;37.9717;-7.62674;0;Bottom;J26
+13;1µF;100 mil [THT, electrolytic];27.5673;-14.2307;180;Bottom;C1
+14;;THT;5.97729;-45.7267;0;Bottom;J13
+15;;;16.4712;-28.5616;-90;Bottom;Componente2
+16;;THT;30.4468;-45.7267;0;Bottom;J20
+17;;THT;45.6868;-45.7267;0;Bottom;J18
+18;;[THT];41.3191;-34.7528;-90;Bottom;S1
+19;;THT;40.5117;-7.62674;0;Bottom;J25
+20;;THT;35.5268;-45.7267;0;Bottom;J21
+21;;THT;11.0573;-45.7267;0;Bottom;J51
+22;;THT;22.7317;-7.62674;0;Bottom;J31
+23;;;17.7468;-38.1067;0;Bottom;Jumper3
+24;;THT;35.4317;-7.62674;0;Bottom;J27
+25;;THT;13.5973;-45.7267;0;Bottom;J45
+26;;THT;38.0668;-45.7267;0;Bottom;J19
+27;;THT;48.1317;-7.62674;0;Bottom;J22
+28;;THT;43.0517;-7.62674;0;Bottom;J23
+29;;THT;26.2973;-45.7267;0;Bottom;J9
+30;;THT;45.5917;-7.62674;0;Bottom;J24
+31;;;17.9495;-26.6767;0;Bottom;Componente1
+32;;;19.99;-40.6467;0;Bottom;Jumper2
+33;;THT;43.1468;-45.7267;0;Bottom;J15
+34;;THT;18.6773;-45.7267;0;Bottom;J43
+35;;THT;23.7573;-45.7267;0;Bottom;J10
+36;;THT;30.3517;-7.62674;0;Bottom;J30
+37;;THT;8.51729;-45.7267;0;Bottom;J12
+38;;THT;48.2268;-45.7267;0;Bottom;J16
+39;;THT;27.8117;-7.62674;0;Bottom;J32
+40;;THT;53.7293;-15.5007;0;Bottom;J53
+41;220;THT;44.0773;-11.6907;180;Bottom;R6
+42;;THT;53.7293;-35.0587;0;Bottom;J54
+43;;THT;17.6517;-7.62674;0;Bottom;J35
+44;;THT;27.5673;-26.6767;0;Bottom;J52

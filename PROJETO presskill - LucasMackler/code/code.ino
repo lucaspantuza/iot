@@ -65,11 +65,11 @@ void setup() {
 
 void loop() {
 
-  // ACENDE/APAGA OS LEDS - LOW:acende, HIGH:APAGA
-  // digitalWrite(LED_AZUL, HIGH);
-  // digitalWrite(LED_AMARELO, LOW);
-  // digitalWrite(LED_VERDE, LOW);
-  // digitalWrite(LED_VERMELHO, HIGH);
+  // ACENDE/APAGA OS LEDS - LOW:apaga, HIGH:acende
+  digitalWrite(LED_AZUL, HIGH);
+  digitalWrite(LED_AMARELO, HIGH);
+  digitalWrite(LED_VERDE, LOW);
+  digitalWrite(LED_VERMELHO, LOW);
 
   // PRESSIONAMENTO BOTOES
   // if (digitalRead(B1) == HIGH) {
