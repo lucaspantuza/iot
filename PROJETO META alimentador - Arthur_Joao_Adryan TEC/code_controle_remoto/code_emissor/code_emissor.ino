@@ -7,10 +7,11 @@
 #define PIN_B2 12
 #define PIN_B3 8
 #define PIN_B4 5
+#define LED_BUILTIN 13
 
 
 void setup() {
-  pinMode(LED_BUILTIN, OUTPUT);
+ pinMode(LED_BUILTIN, OUTPUT);
 
   pinMode(PIN_B1, INPUT_PULLUP);
   pinMode(PIN_B2, INPUT_PULLUP);

@@ -22,8 +22,10 @@ void loop() {
   if (vw_get_message(message, &msgLength)) {  // Non-blocking
     Serial.print("Recebido: ");
     for (int i = 0; i < msgLength; i++) {
-      Serial.write(message[i]);
+      Serial.println(message[i]);
     }
     Serial.println();
   }
+
+
 }
