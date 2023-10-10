@@ -1,15 +1,14 @@
-int hora = 17;
-int minuto = 19;
-int segundo = 0;
-int intervaloM = 1;
+int hora = 15;
+int minuto = 59;
+int intervaloM = 1;  //em minutos
 
 //motor
 #include <Stepper.h>
 
 //tela
-#include <Wire.h>             
-#include <Adafruit_GFX.h>     
-#include <Adafruit_SSD1306.h>  
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
 
 //RF
 #include <VirtualWire.h>
@@ -25,6 +24,11 @@ byte msgLength = VW_MAX_MESSAGE_LEN;  // Armazena o tamanho das mensagens
 
 const int PassoPorVolta = 500;
 const int BOTAO = 3;
+
+int lastS;      //ultimo segundo que foi alimentado
+int lastM;      //ultimo minuto que foi alimentado
+int lastH;      //ultima hora que foi alimentado
+int first = 0;  // começa 0, quando a primeira alimentação ocorrer, ele recebe 1
 
 Stepper MotorP(PassoPorVolta, 4, 6, 5, 7);
 Adafruit_SSD1306 display = Adafruit_SSD1306();
@@ -52,12 +56,21 @@ void setup() {
 
   rtc.begin();
   // para acertar o relogio, descomente as linhas abaixo e atualize seus valores com os atuais
-  // rtc.setDate(23, 8, 17);
-  // rtc.setTime(4, 8, 50);
+  //rtc.setDate(23, 10, 10);
+  //rtc.setTime(15, 22, 8);
 
   vw_set_rx_pin(PIN_RF);  // Define o pino do Arduino como entrada de dados do receptor
   vw_setup(2000);         // Bits por segundo
   vw_rx_start();          // Inicializa o receptor
+}
+
+void alimentar(int vezes = 1) {
+  MotorP.step(682 * 2 * vezes);
+  delay(1000);
+  lastH = hour;
+  lastM = minute;
+  lastS = second;
+  first = 1;
 }
 
 //-------------------
@@ -68,18 +81,15 @@ void loop() {
   if (digitalRead(BOTAO) == HIGH) {
     while (digitalRead(BOTAO) == HIGH) {}
     Serial.println("press");
-    MotorP.step(682 * 2);
-    delay(1000);
-    
+    alimentar();
   }
- 
+
 
   //pega novas informacoes de relogio atualizadas
   rtc.getDate(year, month, day, weekday);
   rtc.getTime(hour, minute, second, period);
-  minute = minute - 3;
 
-   uint8_t message[VW_MAX_MESSAGE_LEN];
+  uint8_t message[VW_MAX_MESSAGE_LEN];
   uint8_t msgLength = VW_MAX_MESSAGE_LEN;
 
   if (vw_get_message(message, &msgLength)) {  // Non-blocking
@@ -90,41 +100,88 @@ void loop() {
     Serial.println();
   }
 
+
+
+  if (message[0] == 'A') {
+    alimentar(1);
+  } else if (message[0] == 'B') {
+    alimentar(2);
+  } else if (message[0] == 'C') {
+    alimentar(3);
+  } else if (message[0] == 'D') {
+    alimentar(4);
+  }
+  message[0] = ' ';
+
+
+
   //imprime no display
-  display.clearDisplay();
-  display.setCursor(10, 0);
-  display.print(w[weekday - 1]);
-  display.setCursor(10, 12);
-  display.print(day, DEC);
-  display.print(" de ");
-  display.print(m[month - 1]);
-  display.print(" de ");
-  display.print(year + 2000, DEC);
-  display.setCursor(10, 24);
-  display.print("   ");
-  if (hour <= 9) display.print("0");
-  display.print(hour, DEC);
-  display.print(":");
-  if (minute <= 9) display.print("0");
-  display.print(minute, DEC);
-  display.print(":");
-  if (second <= 9) display.print("0");
-  display.print(second, DEC);
-  display.display();
+  if (first == 0) {
+    display.clearDisplay();
+    display.setCursor(10, 0);
+    display.print("   ");
+    if (hour <= 9) display.print("0");
+    display.print(hour, DEC);
+    display.print(":");
+    if (minute <= 9) display.print("0");
+    display.print(minute, DEC);
+    display.print(":");
+    if (second <= 9) display.print("0");
+    display.print(second, DEC);
+    display.setCursor(10, 12);
+    display.print("Ultima Alimentacao: ");
+    display.setCursor(10, 24);
+    display.print("   ");
+    display.print("Aguardando...");
+    display.display();
+  } else {
+    display.clearDisplay();
+    display.setCursor(10, 0);
+    display.print("   ");
+    if (hour <= 9) display.print("0");
+    display.print(hour, DEC);
+    display.print(":");
+    if (minute <= 9) display.print("0");
+    display.print(minute, DEC);
+    display.print(":");
+    if (second <= 9) display.print("0");
+    display.print(second, DEC);
+    display.setCursor(10, 12);
+    display.print("Ultima Alimentacao: ");
+    display.setCursor(10, 24);
+    display.print("   ");
+    if (lastH <= 9) display.print("0");
+    display.print(lastH);
+    display.print(":");
+    if (lastM <= 9) display.print("0");
+    display.print(lastM);
+    display.print(":");
+    if (lastS <= 9) display.print("0");
+    display.print(lastS);
+    display.display();
+  }
 
-    if ((hour == hora) && (minute == minuto) && (second == segundo)) {  
-      display.clearDisplay();
-      display.setCursor(10, 0);
-      display.print("IT'S FEEDING TIME!");
-      display.display();
-      MotorP.step(682 * 2);
-      delay(5000);
-      if (intervaloM + minuto > 59){
-        minuto = (intervaloM + minuto) - 60;
-        hora++
-      }else{
-        minuto = intervaloM + minuto;
-      }
 
+  if ((hour == hora) && (minute == minuto) && (second == 0)) {
+    display.clearDisplay();
+    display.setCursor(5, 0);
+    display.print("Alimentador Acionado");
+    display.setCursor(5, 15);
+    display.print("Automaticamente");
+    display.display();
+    alimentar();
+    int total = intervaloM + minuto;
+    int aux = floor(total / 60);
+    if (total > 59) {
+      minuto = (60 * aux) - total;
+      hora = hora + aux;
+    } else {
+      minuto = intervaloM + minuto;
     }
+    Serial.print("Próxima alimentação automática: ");
+    Serial.print(hora);
+    Serial.print(":");
+    Serial.print(minuto);
+    Serial.println();
+  }
 }
