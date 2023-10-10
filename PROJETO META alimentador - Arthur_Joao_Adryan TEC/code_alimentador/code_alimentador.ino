@@ -1,6 +1,7 @@
-int HORA = 16;
-int MINUTO = 47;
-int SEGUNDO = 00;
+int hora = 17;
+int minuto = 19;
+int segundo = 0;
+int intervaloM = 1;
 
 //motor
 #include <Stepper.h>
@@ -10,17 +11,17 @@ int SEGUNDO = 00;
 #include <Adafruit_GFX.h>     
 #include <Adafruit_SSD1306.h>  
 
-//nrF24
-#include <SPI.h>
-#include <nRF24L01.h>
-#include <RF24.h>
+//RF
+#include <VirtualWire.h>
 
 //relogio
 #include "RTCDS1307.h"
 
 //-------------------
-RF24 radio(8, 10);  // CE, CSN
-const byte address[6] = "00001";
+#define PIN_RF 11
+
+byte message[VW_MAX_MESSAGE_LEN];     // Armazena as mensagens recebidas
+byte msgLength = VW_MAX_MESSAGE_LEN;  // Armazena o tamanho das mensagens
 
 const int PassoPorVolta = 500;
 const int BOTAO = 3;
@@ -32,7 +33,7 @@ RTCDS1307 rtc(0x68);
 uint8_t year, month, weekday, day, hour, minute, second;
 bool period = 0;
 String m[12] = { "Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez" };
-String w[7] = { "Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado" };
+String w[7] = { "Domingo", "Segunda-feira", "Terca-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sabado" };
 
 //-------------------
 
@@ -54,10 +55,9 @@ void setup() {
   // rtc.setDate(23, 8, 17);
   // rtc.setTime(4, 8, 50);
 
-  radio.begin();
-  radio.openWritingPipe(address);
-  radio.setPALevel(RF24_PA_MAX);
-  radio.stopListening();
+  vw_set_rx_pin(PIN_RF);  // Define o pino do Arduino como entrada de dados do receptor
+  vw_setup(2000);         // Bits por segundo
+  vw_rx_start();          // Inicializa o receptor
 }
 
 //-------------------
@@ -79,6 +79,16 @@ void loop() {
   rtc.getTime(hour, minute, second, period);
   minute = minute - 3;
 
+   uint8_t message[VW_MAX_MESSAGE_LEN];
+  uint8_t msgLength = VW_MAX_MESSAGE_LEN;
+
+  if (vw_get_message(message, &msgLength)) {  // Non-blocking
+    Serial.print("Recebido: ");
+    for (int i = 0; i < msgLength; i++) {
+      Serial.write(message[i]);
+    }
+    Serial.println();
+  }
 
   //imprime no display
   display.clearDisplay();
@@ -102,12 +112,19 @@ void loop() {
   display.print(second, DEC);
   display.display();
 
-    if ((hour == HORA) && (minute == MINUTO) && (second == SEGUNDO)) {  
+    if ((hour == hora) && (minute == minuto) && (second == segundo)) {  
       display.clearDisplay();
       display.setCursor(10, 0);
       display.print("IT'S FEEDING TIME!");
       display.display();
       MotorP.step(682 * 2);
       delay(5000);
-    }                              
+      if (intervaloM + minuto > 59){
+        minuto = (intervaloM + minuto) - 60;
+        hora++
+      }else{
+        minuto = intervaloM + minuto;
+      }
+
+    }
 }
