@@ -12,6 +12,7 @@ void setup() {
   vw_set_rx_pin(PIN_RF);  // Define o pino do Arduino como entrada de dados do receptor
   vw_setup(2000);         // Bits por segundo
   vw_rx_start();          // Inicializa o receptor
+  Serial.println("oie");
 }
 
 void loop() {
