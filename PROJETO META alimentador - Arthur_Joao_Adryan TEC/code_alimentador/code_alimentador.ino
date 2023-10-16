@@ -73,6 +73,13 @@ void alimentar(int vezes = 1) {
   first = 1;
 }
 
+void messageAlimentar(){
+    display.clearDisplay();
+    display.setCursor(10, 12);
+    display.print("Controle Acionado.");
+    display.display();
+}
+
 //-------------------
 
 void loop() {
@@ -103,12 +110,16 @@ void loop() {
 
 
   if (message[0] == 'A') {
+    messageAlimentar();
     alimentar(1);
   } else if (message[0] == 'B') {
+    messageAlimentar();
     alimentar(2);
   } else if (message[0] == 'C') {
+     messageAlimentar();
     alimentar(3);
   } else if (message[0] == 'D') {
+     messageAlimentar();
     alimentar(4);
   }
   message[0] = ' ';
