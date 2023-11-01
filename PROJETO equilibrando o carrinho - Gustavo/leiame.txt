@@ -1,0 +1,6 @@
+Componentes com o aluno:
+
+- uno
+- ldr (sensor luz)
+- laser vermelho
+- servo 9g
