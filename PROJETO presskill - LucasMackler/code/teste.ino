@@ -32,6 +32,8 @@ int y = 0;
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 
+// set the LCD address to 0x3F for a 20 chars and 4 line display
+LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 #define B1 14
 #define B2 12
@@ -63,7 +65,7 @@ int b3LastState = 0;
 int b4State = 0;
 int b4LastState = 0;
 
-int p1State = 1;                         // Player states: 0=out, 1=in, 2=win;
+int p1State = 1;  // Player states: 0=out, 1=in, 2=win;
 int p2State = 1;
 int p3State = 1;
 int p4State = 1;
@@ -71,31 +73,31 @@ int p1Points = 0;
 int p2Points = 0;
 int p3Points = 0;
 int p4Points = 0;
-const int pointsToWin = 5;              // Points needed to win the game.
+const int pointsToWin = 5;  // Points needed to win the game.
 
 bool deadZone = false;
 unsigned long dZTimerStart = 0;
-const long dZTimerDuration = 5000;     // Duration of the timer in milliseconds
+const long dZTimerDuration = 5000;  // Duration of the timer in milliseconds
 
 bool gameWin = false;
 unsigned long winTimerStart = 0;
-const long winTimerDuration = 250;     // Duration of the timer in milliseconds
-int winLedState = LOW;                 // State of the led of the winning player
+const long winTimerDuration = 250;  // Duration of the timer in milliseconds
+int winLedState = LOW;  // State of the led of the winning player
 
 unsigned long resetTimerStart = 0;
-const long resetTimerDuration = 10000;   // Duration in milliseconds
+const long resetTimerDuration = 10000;  // Duration in milliseconds
 
 
 //  Constantes simon
-const int tamMemoria = 100;      // Número máximo de combinações ou fases de jogo
-const int tempoCor = 1000;      // tempo de cada cor, 1000 millisegundos
+const int tamMemoria = 100;  // Número máximo de combinações ou fases de jogo
+const int tempoCor = 1000;   // tempo de cada cor, 1000 millisegundos
 
 // Endereço na EEPROM onde o recorde será armazenado
 int enderecoRecorde = 0;
 int recorde = 0;
 
 //  Variáveis simon
-int statusB1 = 0;      // Status dos botões
+int statusB1 = 0;   // Status dos botões
 int statusB2 = 0;
 int statusB3 = 0;
 int statusB4 = 0;
@@ -162,6 +164,10 @@ void furElise() { //toca furElise
   int divider = 0, noteDuration = 0;
 
   if (digitalRead(B5) == HIGH) {
+    lcd.clear();
+    lcd.print("Fur Elise");
+    lcd.setCursor(0, 1);
+    lcd.print("Beethoven");
     // iterate over the notes of the melody.
     // Remember, the array is twice the number of notes (notes + durations)
     for (int thisNote = 0; thisNote < notes * 2; thisNote = thisNote + 2) {
@@ -186,6 +192,7 @@ void furElise() { //toca furElise
       // stop the waveform generation before the next note.
       noTone(buzzer);
     }
+    lcd.clear();
   }
 }
 
@@ -197,35 +204,35 @@ void luzinha () { //função para piscar as luzes aleatoriamente
 
   if (ligarLED_AZUL) {
     digitalWrite(LED_AZUL, HIGH);
-    delay(1);
+    delay(5);
     digitalWrite(LED_AZUL, LOW);
   } else{
     digitalWrite(LED_AZUL, LOW);
   }
   if (ligarLED_AMARELO) {
     digitalWrite(LED_AMARELO, HIGH);
-    delay(1);
+    delay(5);
     digitalWrite(LED_AMARELO, LOW);
   } else{
     digitalWrite(LED_AMARELO, LOW);
   }
   if (ligarLED_VERDE) {
     digitalWrite(LED_VERDE, HIGH);
-    delay(1);
+    delay(5);
     digitalWrite(LED_VERDE, LOW);
   } else{
     digitalWrite(LED_VERDE, LOW);
   }
   if (ligarLED_VERMELHO) {
     digitalWrite(LED_VERMELHO, HIGH);
-    delay(1);
+    delay(5);
     digitalWrite(LED_VERMELHO, LOW);
   } else{
     digitalWrite(LED_VERMELHO, LOW);
   }
 }
 
-void takeOnMe () { //toca Take On Me
+void takeOnMe () { //toca Take On Me (pisca os leds)
   #define NOTE_B0  31
   #define NOTE_C1  33
   #define NOTE_CS1 35
@@ -383,6 +390,162 @@ void takeOnMe () { //toca Take On Me
   }
 }
 
+void takeOnMeSemLuzinha () { //toca Take On Me (não pisca os leds)
+  #define NOTE_B0  31
+  #define NOTE_C1  33
+  #define NOTE_CS1 35
+  #define NOTE_D1  37
+  #define NOTE_DS1 39
+  #define NOTE_E1  41
+  #define NOTE_F1  44
+  #define NOTE_FS1 46
+  #define NOTE_G1  49
+  #define NOTE_GS1 52
+  #define NOTE_A1  55
+  #define NOTE_AS1 58
+  #define NOTE_B1  62
+  #define NOTE_C2  65
+  #define NOTE_CS2 69
+  #define NOTE_D2  73
+  #define NOTE_DS2 78
+  #define NOTE_E2  82
+  #define NOTE_F2  87
+  #define NOTE_FS2 93
+  #define NOTE_G2  98
+  #define NOTE_GS2 104
+  #define NOTE_A2  110
+  #define NOTE_AS2 117
+  #define NOTE_B2  123
+  #define NOTE_C3  131
+  #define NOTE_CS3 139
+  #define NOTE_D3  147
+  #define NOTE_DS3 156
+  #define NOTE_E3  165
+  #define NOTE_F3  175
+  #define NOTE_FS3 185
+  #define NOTE_G3  196
+  #define NOTE_GS3 208
+  #define NOTE_A3  220
+  #define NOTE_AS3 233
+  #define NOTE_B3  247
+  #define NOTE_C4  262
+  #define NOTE_CS4 277
+  #define NOTE_D4  294
+  #define NOTE_DS4 311
+  #define NOTE_E4  330
+  #define NOTE_F4  349
+  #define NOTE_FS4 370
+  #define NOTE_G4  392
+  #define NOTE_GS4 415
+  #define NOTE_A4  440
+  #define NOTE_AS4 466
+  #define NOTE_B4  494
+  #define NOTE_C5  523
+  #define NOTE_CS5 554
+  #define NOTE_D5  587
+  #define NOTE_DS5 622
+  #define NOTE_E5  659
+  #define NOTE_F5  698
+  #define NOTE_FS5 740
+  #define NOTE_G5  784
+  #define NOTE_GS5 831
+  #define NOTE_A5  880
+  #define NOTE_AS5 932
+  #define NOTE_B5  988
+  #define NOTE_C6  1047
+  #define NOTE_CS6 1109
+  #define NOTE_D6  1175
+  #define NOTE_DS6 1245
+  #define NOTE_E6  1319
+  #define NOTE_F6  1397
+  #define NOTE_FS6 1480
+  #define NOTE_G6  1568
+  #define NOTE_GS6 1661
+  #define NOTE_A6  1760
+  #define NOTE_AS6 1865
+  #define NOTE_B6  1976
+  #define NOTE_C7  2093
+  #define NOTE_CS7 2217
+  #define NOTE_D7  2349
+  #define NOTE_DS7 2489
+  #define NOTE_E7  2637
+  #define NOTE_F7  2794
+  #define NOTE_FS7 2960
+  #define NOTE_G7  3136
+  #define NOTE_GS7 3322
+  #define NOTE_A7  3520
+  #define NOTE_AS7 3729
+  #define NOTE_B7  3951
+  #define NOTE_C8  4186
+  #define NOTE_CS8 4435
+  #define NOTE_D8  4699
+  #define NOTE_DS8 4978
+  #define REST      0
+
+  int tempo = 140;
+
+  // notes of the moledy followed by the duration.
+  // a 4 means a quarter note, 8 an eighteenth , 16 sixteenth, so on
+  // !!negative numbers are used to represent dotted notes,
+  // so -4 means a dotted quarter note, that is, a quarter plus an eighteenth!!
+  int melody[] = {
+
+    // Take on me, by A-ha
+    // Score available at https://musescore.com/user/27103612/scores/4834399
+    // Arranged by Edward Truong
+
+    NOTE_FS5,8, NOTE_FS5,8,NOTE_D5,8, NOTE_B4,8, REST,8, NOTE_B4,8, REST,8, NOTE_E5,8, 
+    REST,8, NOTE_E5,8, REST,8, NOTE_E5,8, NOTE_GS5,8, NOTE_GS5,8, NOTE_A5,8, NOTE_B5,8,
+    NOTE_A5,8, NOTE_A5,8, NOTE_A5,8, NOTE_E5,8, REST,8, NOTE_D5,8, REST,8, NOTE_FS5,8, 
+    REST,8, NOTE_FS5,8, REST,8, NOTE_FS5,8, NOTE_E5,8, NOTE_E5,8, NOTE_FS5,8, NOTE_E5,8,
+    NOTE_FS5,8, NOTE_FS5,8,NOTE_D5,8, NOTE_B4,8, REST,8, NOTE_B4,8, REST,8, NOTE_E5,8, 
+        
+    REST,8, NOTE_E5,8, REST,8, NOTE_E5,8, NOTE_GS5,8, NOTE_GS5,8, NOTE_A5,8, NOTE_B5,8,
+    NOTE_A5,8, NOTE_A5,8, NOTE_A5,8, NOTE_E5,8, REST,8, NOTE_D5,8, REST,8, NOTE_FS5,8, 
+    REST,8, NOTE_FS5,8, REST,8, NOTE_FS5,8, NOTE_E5,8, NOTE_E5,8, NOTE_FS5,8, NOTE_E5,8,
+    NOTE_FS5,8, NOTE_FS5,8,NOTE_D5,8, NOTE_B4,8, REST,8, NOTE_B4,8, REST,8, NOTE_E5,8, 
+    REST,8, NOTE_E5,8, REST,8, NOTE_E5,8, NOTE_GS5,8, NOTE_GS5,8, NOTE_A5,8, NOTE_B5,8,
+        
+    NOTE_A5,8, NOTE_A5,8, NOTE_A5,8, NOTE_E5,8, REST,8, NOTE_D5,8, REST,8, NOTE_FS5,8, 
+    REST,8, NOTE_FS5,8, REST,8, NOTE_FS5,8, NOTE_E5,8, NOTE_E5,8, NOTE_FS5,8, NOTE_E5,8,
+        
+  };
+
+  // sizeof gives the number of bytes, each int value is composed of two bytes (16 bits)
+  // there are two values per note (pitch and duration), so for each note there are four bytes
+  int notes = sizeof(melody) / sizeof(melody[0]) / 2;
+
+  // this calculates the duration of a whole note in ms
+  int wholenote = (60000 * 4) / tempo;
+
+  int divider = 0, noteDuration = 0;
+
+  // iterate over the notes of the melody.
+  // Remember, the array is twice the number of notes (notes + durations)
+  for (int thisNote = 0; thisNote < notes * 2; thisNote = thisNote + 2) {
+
+    // calculates the duration of each note
+    divider = melody[thisNote + 1];
+    if (divider > 0) {
+      // regular note, just proceed
+      noteDuration = (wholenote) / divider;
+    } else if (divider < 0) {
+      // dotted notes are represented with negative durations!!
+      noteDuration = (wholenote) / abs(divider);
+      noteDuration *= 1.5; // increases the duration in half for dotted notes
+    }
+
+    // we only play the note for 90% of the duration, leaving 10% as a pause
+    tone(BUZZER, melody[thisNote], noteDuration * 0.9);
+
+    // Wait for the specief duration before playing the next note.
+    delay(noteDuration);
+
+    // stop the waveform generation before the next note.
+    noTone(BUZZER);
+  }
+}
+
 
 //  FUNÇÕES PRESSKILL
 int ButtonTest(int buttonPin, int state, int lastState, int playerState, int buttonNumber) {
@@ -464,7 +627,36 @@ void PlayerWin(int p1NewState, int p2NewState, int p3NewState, int p4NewState) {
   p3State = p3NewState;
   p4State = p4NewState;
 
-  takeOnMe();
+  apagaLeds();
+  lcd.clear();
+  if (p1State == 2) {
+    lcd.setCursor(2, 0);
+    lcd.print("Jogador azul");
+    lcd.setCursor(1, 1);
+    lcd.print("ganhou o jogo!");
+    digitalWrite(LED_AZUL, HIGH);
+  } else if (p2State == 2) {
+    lcd.setCursor(0, 0);
+    lcd.print("Jogador amarelo");
+    lcd.setCursor(1, 1);
+    lcd.print("ganhou o jogo!");
+    digitalWrite(LED_AMARELO, HIGH);
+  } else if (p3State == 2) {
+    lcd.setCursor(2, 0);
+    lcd.print("Jogador verde");
+    lcd.setCursor(1, 1);
+    lcd.print("ganhou o jogo!");
+    digitalWrite(LED_VERDE, HIGH);
+  } else if (p4State == 2) {
+    lcd.setCursor(0, 0);
+    lcd.print("Jogador vermelho");
+    lcd.setCursor(1, 1);
+    lcd.print("ganhou o jogo!");
+    digitalWrite(LED_VERMELHO, HIGH);
+  }
+  takeOnMeSemLuzinha();
+  lcd.clear();
+  
 }
 
 void WinTimer() {
@@ -480,7 +672,7 @@ void WinTimer() {
 
 void ResetTimer() {
   if (millis() - resetTimerStart >= resetTimerDuration) {
-    // Reset all important variables so the game can be player again.
+    // Reset all important variables so the game can be played again.
     p1State = 1;
     p2State = 1;
     p3State = 1;
@@ -533,6 +725,10 @@ void Debug() {
 
 //  FUNÇÕES SIMON
 void modoDemo() {
+  lcd.clear();
+  lcd.setCursor(5, 0);
+  lcd.print("SIMON");
+
   currentTime = millis();
   if ((currentTime - lastTime) > 100) {
     demoLed++;
@@ -612,8 +808,10 @@ void modoJogo() {
 
 // Função de efeitos de início do jogo e carregamento da memória
 void inicioJogo() {
+  lcd.clear();
+  lcd.setCursor(5, 0);
+  lcd.print("SIMON");
   Serial.println("Iniciando Jogo...");
-  //somInicio();
   for (int i = 0; i < 10; i++) {
     digitalWrite(LED_VERMELHO, LOW);
     delay(40);
@@ -651,6 +849,13 @@ void inicioJogo() {
 
 // Função de Jogo para turno do Arduino, acender os Leds conforme memória e fase atual
 void turnoArduino() {
+  lcd.clear();
+  lcd.print("Fase atual -> ");
+  lcd.print(faseJogo);
+  lcd.setCursor(0,1);
+  lcd.print("Recorde -> ");
+  lcd.print(recorde);
+
   Serial.print("Turno Arduino, Fase: ");
   Serial.println(faseJogo);       // variável faseJogo é o quanto o Jogador vai avançando, Arduino exibe até onde Jogador está
 
@@ -680,8 +885,16 @@ void turnoArduino() {
 
 // Função de Jogo para o turno do Jogador,
 void turnoJogador() {
+  lcd.clear();
+  lcd.print("Fase atual -> ");
+  lcd.print(faseJogo);
+  lcd.setCursor(0,1);
+  lcd.print("Recorde -> ");
+  lcd.print(recorde);
+
   Serial.print("Turno Jogador, Fase: ");
   Serial.println(faseJogo);
+
   int terminoTurno = 0;
 
   // Para cada fase alcançada, jogador tem que repetir sequencia do Arduino
@@ -783,10 +996,18 @@ int leituraBotoesJogo(int fase) {
 
 // Função com efeitos de Perdeu o Jogo
 void perdeJogo() {
+  lcd.clear();
+  lcd.setCursor(5, 0);
+  lcd.print("Errou!");
   somPerdeu();
   if (faseJogo > recorde) {
-    takeOnMe();
     recorde = faseJogo - 1;
+    lcd.setCursor(0,0);
+    lcd.print("Recorde batido!");
+    lcd.setCursor(0,1);
+    lcd.print("Novo recorde->");
+    lcd.print(recorde);
+    takeOnMe();
     EEPROM.write(enderecoRecorde, recorde);
     EEPROM.commit();  // Isso é importante para gravar os dados na EEPROM
   }
@@ -795,6 +1016,15 @@ void perdeJogo() {
   Serial.println(faseJogo);
   Serial.print("Recorde: ");
   Serial.println(recorde);
+
+
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("Fase -> ");
+  lcd.print(faseJogo);
+  lcd.setCursor(0,1);
+  lcd.print("Recorde -> ");
+  lcd.print(recorde);
 
   for (int i = 0; i < 15; i++) {
     digitalWrite(LED_VERMELHO, LOW);
@@ -813,6 +1043,11 @@ void perdeJogo() {
 
 // Função com efeitos de Ganhou o Jogo
 void ganhouJogo() {
+  lcd.setCursor(4, 0);
+  lcd.print("PARABENS");
+  lcd.setCursor(2, 1);
+  lcd.print("VOCE VENCEU!");
+
   takeOnMe();
   Serial.print("ganhouJogo()");
   for (int i = 0; i < 20; i++) {
@@ -878,16 +1113,6 @@ void somAZ() {
   noTone(BUZZER);
 }
 
-/*void somInicio() { //*trocar por furElise*
-  for (int thisNote = 0; thisNote < songLength; thisNote++) {
-    int duration = 1000 / durations3[thisNote];
-    tone(BUZZER, melody3[thisNote], duration);
-    int pause = duration * 1.3;
-    delay(pause);
-    noTone(BUZZER);
-  }
-}*/
-
 void somPerdeu() {
   tone(BUZZER,200); 
     for (int i = 1; i <= 3; i++) { //quando errar a ordem
@@ -903,16 +1128,6 @@ void somPerdeu() {
     delay(200);
   }   
   noTone(BUZZER);
-}
-
-void somGanhou() { //*trocar por takeOnMe*
-  /*for (int thisNote = 0; thisNote < tuneSize; thisNote++) {
-    int noteDuration = (int)((1000 * (60 * 4 / 120)) / durations4[thisNote] + 0.);
-    tone(BUZZER, melody4[thisNote],noteDuration);
-    int pauseBetweenNotes = noteDuration * 1.20;
-    delay(pauseBetweenNotes);
-    noTone(BUZZER);
-  }*/
 }
 
 
@@ -931,6 +1146,8 @@ void simon () { //função com o modo de jogo simon
 
 void presskill () { //função com o modo de jogo presskill
   while (gameWin == false){
+    lcd.setCursor(3, 0);
+    lcd.print("PRESSKILL");
     // Button press testing
     b1LastState = ButtonTest(B1, b1State, b1LastState, p1State, 1);
     b2LastState = ButtonTest(B2, b2State, b2LastState, p2State, 2);
@@ -962,9 +1179,17 @@ void presskill () { //função com o modo de jogo presskill
 void escolhaDeModo () { //função para escolher o modo de jogo
   digitalWrite(LED_AZUL, HIGH);
   digitalWrite(LED_AMARELO, HIGH);
-  //escrever no lcd qual modo de jogo corresponde a cada cor (presskill == amarelo)(simon == azul)
+
+  lcd.setCursor(0, 0);
+  lcd.print("Simon     -> azl");
+  lcd.setCursor(0, 1);
+  lcd.print("Presskill -> amr");
 
   if (digitalRead(B1) == HIGH) { //simon
+    lcd.clear();
+    lcd.setCursor(5, 0);
+    lcd.print("SIMON");
+
     Serial.println("    SIMON");
     tone(BUZZER,781);    
     delay(100);
@@ -972,13 +1197,15 @@ void escolhaDeModo () { //função para escolher o modo de jogo
     noTone(BUZZER);
     digitalWrite(LED_AZUL, HIGH);
 
-    //escreve "Simon - nível atual: x - recorde: y"
-
     delay(2000);
     simon();
   }
 
   if (digitalRead(B2) == HIGH) { //presskill
+    lcd.clear();
+    lcd.setCursor(3, 0);
+    lcd.print("PRESSKILL");
+
     Serial.println("    PRESSKILL");
     tone(BUZZER,781);    
     delay(100);
@@ -986,7 +1213,6 @@ void escolhaDeModo () { //função para escolher o modo de jogo
     noTone(BUZZER);
     digitalWrite(LED_AMARELO, HIGH);
 
-    //escreve "Presskill - jogador com maior pontuação: z(cor do led)"
 
     delay(2000);
     presskill();
@@ -1003,12 +1229,9 @@ void encerraJogo() {
 }
 
 
-// LCD ***********************
-// LiquidCrystal_I2C lcd(0x27, 16, 2);  // set the LCD address to 0x3F for a 20 chars and 4 line display
-
 // the setup function runs once when you press reset or power the board
 void setup() {
-  // Inicialize a EEPROM
+  // Inicializa a EEPROM
   EEPROM.begin(512);
 
   // Recupere o recorde da EEPROM
@@ -1016,14 +1239,14 @@ void setup() {
 
 
   // CONFIGURACAO INICIAL DO LCD ***********************
-  // lcd.init();  // initialize the lcd
-  // lcd.backlight();
-  // // lcd.setCursor(COLUNA, LINHA);
-  // lcd.setCursor(0, 0);
-  // lcd.print("     CEFET");
-  // // lcd.setCursor(0, 1);
-  // // lcd.print("Extensao OAs");
-  // //lcd.clear();
+  lcd.init();  // initialize the lcd
+  lcd.backlight();
+  // lcd.setCursor(COLUNA, LINHA);
+  lcd.setCursor(0, 0);
+  lcd.print("     CEFET");
+  // lcd.setCursor(0, 1);
+  // lcd.print("Extensao OAs");
+  //lcd.clear();
 
 
   // Configuracao de pinos dos botoes
@@ -1181,7 +1404,12 @@ void loop() {
     digitalWrite(LED_VERMELHO, LOW);
     furElise();
     if (digitalRead(B6) == HIGH) { //take on me
+      lcd.clear();
+      lcd.print("Take on me");
+      lcd.setCursor(0, 1);
+      lcd.print("A-HA");
       takeOnMe();
+      lcd.clear();
     }
   }
 
@@ -1209,6 +1437,7 @@ void loop() {
   }
   if (digitalRead(B5) == HIGH) {
     Serial.println("B5 HIGH");
+    encerraJogo();
   } else {
     Serial.println("B5 LOW");
   }
