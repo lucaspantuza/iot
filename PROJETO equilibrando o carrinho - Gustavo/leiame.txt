@@ -1,6 +1,10 @@
 Componentes com o aluno:
 
-- uno
+- uno / troquei por outro uno com duas carreitas de conector GND
 - ldr (sensor luz)
 - laser vermelho
 - servo 9g
+
+- uma plaquinha com um dipswitch de 4 pos
+- buzzer
+- um LCD 16*2
