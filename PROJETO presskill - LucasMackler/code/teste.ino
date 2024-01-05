@@ -55,6 +55,13 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);
 #define LED_VERDE 25
 #define LED_VERMELHO 33
 
+//  Variáveis menu
+int statusD1 = 0;
+int statusD2 = 0;
+int statusD3 = 0;
+int statusD4 = 0;
+int stateB5 = 0;
+
 //  Variáveis e constantes presskill
 int b1State = 0;
 int b1LastState = 0;
@@ -76,7 +83,7 @@ int p4Points = 0;
 const int pointsToWin = 5;  // Points needed to win the game.
 
 bool deadZone = false;
-unsigned long dZTimerStart = 0;
+unsigned long dZTimerStart = 1;
 const long dZTimerDuration = 5000;  // Duration of the timer in milliseconds
 
 bool gameWin = false;
@@ -119,6 +126,192 @@ int perdeuJogo = 0;       // indicador para perdeu o jogo
 int tempoJogador = 5000;  // Tempo da vez do jogador, para cada cor
 
 //  FUNÇÕES
+void luzinha () { //função para piscar as luzes aleatoriamente
+  bool ligarLED_AZUL = random(2) == 1;
+  bool ligarLED_AMARELO = random(2) == 1;
+  bool ligarLED_VERDE = random(2) == 1;
+  bool ligarLED_VERMELHO = random(2) == 1;
+
+  apagaLeds();
+
+  if (ligarLED_AZUL) {
+    digitalWrite(LED_AZUL, HIGH);
+  } /*else{
+    digitalWrite(LED_AZUL, LOW);
+  }*/
+  if (ligarLED_AMARELO) {
+    digitalWrite(LED_AMARELO, HIGH);
+  } /*else{
+    digitalWrite(LED_AMARELO, LOW);
+  }*/
+  if (ligarLED_VERDE) {
+    digitalWrite(LED_VERDE, HIGH);
+  } /*else{
+    digitalWrite(LED_VERDE, LOW);
+  }*/
+  if (ligarLED_VERMELHO) {
+    digitalWrite(LED_VERMELHO, HIGH);
+  } /*else{
+    digitalWrite(LED_VERMELHO, LOW);
+  }*/
+}
+
+void takeOnMeSemLuzinha () { //toca Take On Me (não pisca os leds)
+  #define NOTE_B0  31
+  #define NOTE_C1  33
+  #define NOTE_CS1 35
+  #define NOTE_D1  37
+  #define NOTE_DS1 39
+  #define NOTE_E1  41
+  #define NOTE_F1  44
+  #define NOTE_FS1 46
+  #define NOTE_G1  49
+  #define NOTE_GS1 52
+  #define NOTE_A1  55
+  #define NOTE_AS1 58
+  #define NOTE_B1  62
+  #define NOTE_C2  65
+  #define NOTE_CS2 69
+  #define NOTE_D2  73
+  #define NOTE_DS2 78
+  #define NOTE_E2  82
+  #define NOTE_F2  87
+  #define NOTE_FS2 93
+  #define NOTE_G2  98
+  #define NOTE_GS2 104
+  #define NOTE_A2  110
+  #define NOTE_AS2 117
+  #define NOTE_B2  123
+  #define NOTE_C3  131
+  #define NOTE_CS3 139
+  #define NOTE_D3  147
+  #define NOTE_DS3 156
+  #define NOTE_E3  165
+  #define NOTE_F3  175
+  #define NOTE_FS3 185
+  #define NOTE_G3  196
+  #define NOTE_GS3 208
+  #define NOTE_A3  220
+  #define NOTE_AS3 233
+  #define NOTE_B3  247
+  #define NOTE_C4  262
+  #define NOTE_CS4 277
+  #define NOTE_D4  294
+  #define NOTE_DS4 311
+  #define NOTE_E4  330
+  #define NOTE_F4  349
+  #define NOTE_FS4 370
+  #define NOTE_G4  392
+  #define NOTE_GS4 415
+  #define NOTE_A4  440
+  #define NOTE_AS4 466
+  #define NOTE_B4  494
+  #define NOTE_C5  523
+  #define NOTE_CS5 554
+  #define NOTE_D5  587
+  #define NOTE_DS5 622
+  #define NOTE_E5  659
+  #define NOTE_F5  698
+  #define NOTE_FS5 740
+  #define NOTE_G5  784
+  #define NOTE_GS5 831
+  #define NOTE_A5  880
+  #define NOTE_AS5 932
+  #define NOTE_B5  988
+  #define NOTE_C6  1047
+  #define NOTE_CS6 1109
+  #define NOTE_D6  1175
+  #define NOTE_DS6 1245
+  #define NOTE_E6  1319
+  #define NOTE_F6  1397
+  #define NOTE_FS6 1480
+  #define NOTE_G6  1568
+  #define NOTE_GS6 1661
+  #define NOTE_A6  1760
+  #define NOTE_AS6 1865
+  #define NOTE_B6  1976
+  #define NOTE_C7  2093
+  #define NOTE_CS7 2217
+  #define NOTE_D7  2349
+  #define NOTE_DS7 2489
+  #define NOTE_E7  2637
+  #define NOTE_F7  2794
+  #define NOTE_FS7 2960
+  #define NOTE_G7  3136
+  #define NOTE_GS7 3322
+  #define NOTE_A7  3520
+  #define NOTE_AS7 3729
+  #define NOTE_B7  3951
+  #define NOTE_C8  4186
+  #define NOTE_CS8 4435
+  #define NOTE_D8  4699
+  #define NOTE_DS8 4978
+  #define REST      0
+
+  int tempo = 140;
+
+  // notes of the moledy followed by the duration.
+  // a 4 means a quarter note, 8 an eighteenth , 16 sixteenth, so on
+  // !!negative numbers are used to represent dotted notes,
+  // so -4 means a dotted quarter note, that is, a quarter plus an eighteenth!!
+  int melody[] = {
+
+    // Take on me, by A-ha
+    // Score available at https://musescore.com/user/27103612/scores/4834399
+    // Arranged by Edward Truong
+
+    NOTE_FS5,8, NOTE_FS5,8,NOTE_D5,8, NOTE_B4,8, REST,8, NOTE_B4,8, REST,8, NOTE_E5,8, 
+    REST,8, NOTE_E5,8, REST,8, NOTE_E5,8, NOTE_GS5,8, NOTE_GS5,8, NOTE_A5,8, NOTE_B5,8,
+    NOTE_A5,8, NOTE_A5,8, NOTE_A5,8, NOTE_E5,8, REST,8, NOTE_D5,8, REST,8, NOTE_FS5,8, 
+    REST,8, NOTE_FS5,8, REST,8, NOTE_FS5,8, NOTE_E5,8, NOTE_E5,8, NOTE_FS5,8, NOTE_E5,8,
+    NOTE_FS5,8, NOTE_FS5,8,NOTE_D5,8, NOTE_B4,8, REST,8, NOTE_B4,8, REST,8, NOTE_E5,8, 
+        
+    REST,8, NOTE_E5,8, REST,8, NOTE_E5,8, NOTE_GS5,8, NOTE_GS5,8, NOTE_A5,8, NOTE_B5,8,
+    NOTE_A5,8, NOTE_A5,8, NOTE_A5,8, NOTE_E5,8, REST,8, NOTE_D5,8, REST,8, NOTE_FS5,8, 
+    REST,8, NOTE_FS5,8, REST,8, NOTE_FS5,8, NOTE_E5,8, NOTE_E5,8, NOTE_FS5,8, NOTE_E5,8,
+    NOTE_FS5,8, NOTE_FS5,8,NOTE_D5,8, NOTE_B4,8, REST,8, NOTE_B4,8, REST,8, NOTE_E5,8, 
+    REST,8, NOTE_E5,8, REST,8, NOTE_E5,8, NOTE_GS5,8, NOTE_GS5,8, NOTE_A5,8, NOTE_B5,8,
+        
+    NOTE_A5,8, NOTE_A5,8, NOTE_A5,8, NOTE_E5,8, REST,8, NOTE_D5,8, REST,8, NOTE_FS5,8, 
+    REST,8, NOTE_FS5,8, REST,8, NOTE_FS5,8, NOTE_E5,8, NOTE_E5,8, NOTE_FS5,8, NOTE_E5,8,
+        
+  };
+
+  // sizeof gives the number of bytes, each int value is composed of two bytes (16 bits)
+  // there are two values per note (pitch and duration), so for each note there are four bytes
+  int notes = sizeof(melody) / sizeof(melody[0]) / 2;
+
+  // this calculates the duration of a whole note in ms
+  int wholenote = (60000 * 4) / tempo;
+
+  int divider = 0, noteDuration = 0;
+
+  // iterate over the notes of the melody.
+  // Remember, the array is twice the number of notes (notes + durations)
+  for (int thisNote = 0; thisNote < notes * 2; thisNote = thisNote + 2) {
+
+    // calculates the duration of each note
+    divider = melody[thisNote + 1];
+    if (divider > 0) {
+      // regular note, just proceed
+      noteDuration = (wholenote) / divider;
+    } else if (divider < 0) {
+      // dotted notes are represented with negative durations!!
+      noteDuration = (wholenote) / abs(divider);
+      noteDuration *= 1.5; // increases the duration in half for dotted notes
+    }
+
+    // we only play the note for 90% of the duration, leaving 10% as a pause
+    tone(BUZZER, melody[thisNote], noteDuration * 0.9);
+
+    // Wait for the specief duration before playing the next note.
+    delay(noteDuration);
+
+    // stop the waveform generation before the next note.
+    noTone(BUZZER);
+  }
+}
+
 void furElise() { //toca furElise
   #define NOTE_C4  262
   #define NOTE_E4  330
@@ -163,7 +356,7 @@ void furElise() { //toca furElise
 
   int divider = 0, noteDuration = 0;
 
-  if (digitalRead(B5) == HIGH) {
+  if (digitalRead(B1) == HIGH) {
     lcd.clear();
     lcd.print("Fur Elise");
     lcd.setCursor(0, 1);
@@ -186,49 +379,16 @@ void furElise() { //toca furElise
       // we only play the note for 90% of the duration, leaving 10% as a pause
       tone(buzzer, pgm_read_word_near(melody+thisNote), noteDuration * 0.9);
 
+      luzinha();
+
       // Wait for the specief duration before playing the next note.
       delay(noteDuration);
 
       // stop the waveform generation before the next note.
       noTone(buzzer);
+
     }
     lcd.clear();
-  }
-}
-
-void luzinha () { //função para piscar as luzes aleatoriamente
-  bool ligarLED_AZUL = random(2) == 1;
-  bool ligarLED_AMARELO = random(2) == 1;
-  bool ligarLED_VERDE = random(2) == 1;
-  bool ligarLED_VERMELHO = random(2) == 1;
-
-  if (ligarLED_AZUL) {
-    digitalWrite(LED_AZUL, HIGH);
-    delay(5);
-    digitalWrite(LED_AZUL, LOW);
-  } else{
-    digitalWrite(LED_AZUL, LOW);
-  }
-  if (ligarLED_AMARELO) {
-    digitalWrite(LED_AMARELO, HIGH);
-    delay(5);
-    digitalWrite(LED_AMARELO, LOW);
-  } else{
-    digitalWrite(LED_AMARELO, LOW);
-  }
-  if (ligarLED_VERDE) {
-    digitalWrite(LED_VERDE, HIGH);
-    delay(5);
-    digitalWrite(LED_VERDE, LOW);
-  } else{
-    digitalWrite(LED_VERDE, LOW);
-  }
-  if (ligarLED_VERMELHO) {
-    digitalWrite(LED_VERMELHO, HIGH);
-    delay(5);
-    digitalWrite(LED_VERMELHO, LOW);
-  } else{
-    digitalWrite(LED_VERMELHO, LOW);
   }
 }
 
@@ -390,7 +550,7 @@ void takeOnMe () { //toca Take On Me (pisca os leds)
   }
 }
 
-void takeOnMeSemLuzinha () { //toca Take On Me (não pisca os leds)
+void theGodfather () {  //toca The Godfather Theme (O Poderoso Chefão)
   #define NOTE_B0  31
   #define NOTE_C1  33
   #define NOTE_CS1 35
@@ -482,7 +642,9 @@ void takeOnMeSemLuzinha () { //toca Take On Me (não pisca os leds)
   #define NOTE_DS8 4978
   #define REST      0
 
-  int tempo = 140;
+
+  // change this to make the song slower or faster
+  int tempo = 80;
 
   // notes of the moledy followed by the duration.
   // a 4 means a quarter note, 8 an eighteenth , 16 sixteenth, so on
@@ -490,25 +652,42 @@ void takeOnMeSemLuzinha () { //toca Take On Me (não pisca os leds)
   // so -4 means a dotted quarter note, that is, a quarter plus an eighteenth!!
   int melody[] = {
 
-    // Take on me, by A-ha
-    // Score available at https://musescore.com/user/27103612/scores/4834399
-    // Arranged by Edward Truong
+    // The Godfather theme
+    // Score available at https://musescore.com/user/35463/scores/55160
 
-    NOTE_FS5,8, NOTE_FS5,8,NOTE_D5,8, NOTE_B4,8, REST,8, NOTE_B4,8, REST,8, NOTE_E5,8, 
-    REST,8, NOTE_E5,8, REST,8, NOTE_E5,8, NOTE_GS5,8, NOTE_GS5,8, NOTE_A5,8, NOTE_B5,8,
-    NOTE_A5,8, NOTE_A5,8, NOTE_A5,8, NOTE_E5,8, REST,8, NOTE_D5,8, REST,8, NOTE_FS5,8, 
-    REST,8, NOTE_FS5,8, REST,8, NOTE_FS5,8, NOTE_E5,8, NOTE_E5,8, NOTE_FS5,8, NOTE_E5,8,
-    NOTE_FS5,8, NOTE_FS5,8,NOTE_D5,8, NOTE_B4,8, REST,8, NOTE_B4,8, REST,8, NOTE_E5,8, 
-        
-    REST,8, NOTE_E5,8, REST,8, NOTE_E5,8, NOTE_GS5,8, NOTE_GS5,8, NOTE_A5,8, NOTE_B5,8,
-    NOTE_A5,8, NOTE_A5,8, NOTE_A5,8, NOTE_E5,8, REST,8, NOTE_D5,8, REST,8, NOTE_FS5,8, 
-    REST,8, NOTE_FS5,8, REST,8, NOTE_FS5,8, NOTE_E5,8, NOTE_E5,8, NOTE_FS5,8, NOTE_E5,8,
-    NOTE_FS5,8, NOTE_FS5,8,NOTE_D5,8, NOTE_B4,8, REST,8, NOTE_B4,8, REST,8, NOTE_E5,8, 
-    REST,8, NOTE_E5,8, REST,8, NOTE_E5,8, NOTE_GS5,8, NOTE_GS5,8, NOTE_A5,8, NOTE_B5,8,
-        
-    NOTE_A5,8, NOTE_A5,8, NOTE_A5,8, NOTE_E5,8, REST,8, NOTE_D5,8, REST,8, NOTE_FS5,8, 
-    REST,8, NOTE_FS5,8, REST,8, NOTE_FS5,8, NOTE_E5,8, NOTE_E5,8, NOTE_FS5,8, NOTE_E5,8,
-        
+    REST, 4, REST, 8, REST, 8, REST, 8, NOTE_E4, 8, NOTE_A4, 8, NOTE_C5, 8, //1
+    NOTE_B4, 8, NOTE_A4, 8, NOTE_C5, 8, NOTE_A4, 8, NOTE_B4, 8, NOTE_A4, 8, NOTE_F4, 8, NOTE_G4, 8,
+    NOTE_E4, 2, NOTE_E4, 8, NOTE_A4, 8, NOTE_C5, 8,
+    NOTE_B4, 8, NOTE_A4, 8, NOTE_C5, 8, NOTE_A4, 8, NOTE_C5, 8, NOTE_A4, 8, NOTE_E4, 8, NOTE_DS4, 8,
+    
+    NOTE_D4, 2, NOTE_D4, 8, NOTE_F4, 8, NOTE_GS4, 8, //5
+    NOTE_B4, 2, NOTE_D4, 8, NOTE_F4, 8, NOTE_GS4, 8,
+    NOTE_A4, 2, NOTE_C4, 8, NOTE_C4, 8, NOTE_G4, 8, 
+    NOTE_F4, 8, NOTE_E4, 8, NOTE_G4, 8, NOTE_F4, 8, NOTE_F4, 8, NOTE_E4, 8, NOTE_E4, 8, NOTE_GS4, 8,
+
+    NOTE_A4, 2, REST,8, NOTE_A4, 8, NOTE_A4, 8, NOTE_GS4, 8, //9
+    NOTE_G4, 2, NOTE_B4, 8, NOTE_A4, 8, NOTE_F4, 8, 
+    NOTE_E4, 2, NOTE_E4, 8, NOTE_G4, 8, NOTE_E4, 8,
+    NOTE_D4, 2, NOTE_D4, 8, NOTE_D4, 8, NOTE_F4, 8, NOTE_DS4, 8, 
+    
+    NOTE_E4, 2, REST, 8, NOTE_E4, 8, NOTE_A4, 8, NOTE_C5, 8, //13
+
+    //repeats from 2
+    NOTE_B4, 8, NOTE_A4, 8, NOTE_C5, 8, NOTE_A4, 8, NOTE_B4, 8, NOTE_A4, 8, NOTE_F4, 8, NOTE_G4, 8, //2
+    NOTE_E4, 2, NOTE_E4, 8, NOTE_A4, 8, NOTE_C5, 8,
+    NOTE_B4, 8, NOTE_A4, 8, NOTE_C5, 8, NOTE_A4, 8, NOTE_C5, 8, NOTE_A4, 8, NOTE_E4, 8, NOTE_DS4, 8,
+    
+    NOTE_D4, 2, NOTE_D4, 8, NOTE_F4, 8, NOTE_GS4, 8, //5
+    NOTE_B4, 2, NOTE_D4, 8, NOTE_F4, 8, NOTE_GS4, 8,
+    NOTE_A4, 2, NOTE_C4, 8, NOTE_C4, 8, NOTE_G4, 8, 
+    NOTE_F4, 8, NOTE_E4, 8, NOTE_G4, 8, NOTE_F4, 8, NOTE_F4, 8, NOTE_E4, 8, NOTE_E4, 8, NOTE_GS4, 8,
+
+    NOTE_A4, 2, REST,8, NOTE_A4, 8, NOTE_A4, 8, NOTE_GS4, 8, //9
+    NOTE_G4, 2, NOTE_B4, 8, NOTE_A4, 8, NOTE_F4, 8, 
+    NOTE_E4, 2, NOTE_E4, 8, NOTE_G4, 8, NOTE_E4, 8,
+    NOTE_D4, 2, NOTE_D4, 8, NOTE_D4, 8, NOTE_F4, 8, NOTE_DS4, 8, 
+    
+    NOTE_E4, 2 //13
   };
 
   // sizeof gives the number of bytes, each int value is composed of two bytes (16 bits)
@@ -538,9 +717,686 @@ void takeOnMeSemLuzinha () { //toca Take On Me (não pisca os leds)
     // we only play the note for 90% of the duration, leaving 10% as a pause
     tone(BUZZER, melody[thisNote], noteDuration * 0.9);
 
+    luzinha(); //faz os LEDs piscarem aleatoriamente durante a música
+
     // Wait for the specief duration before playing the next note.
     delay(noteDuration);
 
+    // stop the waveform generation before the next note.
+    noTone(BUZZER);
+  }
+}
+
+void silentNight () { //toca Silent Night
+  #define NOTE_B0  31
+  #define NOTE_C1  33
+  #define NOTE_CS1 35
+  #define NOTE_D1  37
+  #define NOTE_DS1 39
+  #define NOTE_E1  41
+  #define NOTE_F1  44
+  #define NOTE_FS1 46
+  #define NOTE_G1  49
+  #define NOTE_GS1 52
+  #define NOTE_A1  55
+  #define NOTE_AS1 58
+  #define NOTE_B1  62
+  #define NOTE_C2  65
+  #define NOTE_CS2 69
+  #define NOTE_D2  73
+  #define NOTE_DS2 78
+  #define NOTE_E2  82
+  #define NOTE_F2  87
+  #define NOTE_FS2 93
+  #define NOTE_G2  98
+  #define NOTE_GS2 104
+  #define NOTE_A2  110
+  #define NOTE_AS2 117
+  #define NOTE_B2  123
+  #define NOTE_C3  131
+  #define NOTE_CS3 139
+  #define NOTE_D3  147
+  #define NOTE_DS3 156
+  #define NOTE_E3  165
+  #define NOTE_F3  175
+  #define NOTE_FS3 185
+  #define NOTE_G3  196
+  #define NOTE_GS3 208
+  #define NOTE_A3  220
+  #define NOTE_AS3 233
+  #define NOTE_B3  247
+  #define NOTE_C4  262
+  #define NOTE_CS4 277
+  #define NOTE_D4  294
+  #define NOTE_DS4 311
+  #define NOTE_E4  330
+  #define NOTE_F4  349
+  #define NOTE_FS4 370
+  #define NOTE_G4  392
+  #define NOTE_GS4 415
+  #define NOTE_A4  440
+  #define NOTE_AS4 466
+  #define NOTE_B4  494
+  #define NOTE_C5  523
+  #define NOTE_CS5 554
+  #define NOTE_D5  587
+  #define NOTE_DS5 622
+  #define NOTE_E5  659
+  #define NOTE_F5  698
+  #define NOTE_FS5 740
+  #define NOTE_G5  784
+  #define NOTE_GS5 831
+  #define NOTE_A5  880
+  #define NOTE_AS5 932
+  #define NOTE_B5  988
+  #define NOTE_C6  1047
+  #define NOTE_CS6 1109
+  #define NOTE_D6  1175
+  #define NOTE_DS6 1245
+  #define NOTE_E6  1319
+  #define NOTE_F6  1397
+  #define NOTE_FS6 1480
+  #define NOTE_G6  1568
+  #define NOTE_GS6 1661
+  #define NOTE_A6  1760
+  #define NOTE_AS6 1865
+  #define NOTE_B6  1976
+  #define NOTE_C7  2093
+  #define NOTE_CS7 2217
+  #define NOTE_D7  2349
+  #define NOTE_DS7 2489
+  #define NOTE_E7  2637
+  #define NOTE_F7  2794
+  #define NOTE_FS7 2960
+  #define NOTE_G7  3136
+  #define NOTE_GS7 3322
+  #define NOTE_A7  3520
+  #define NOTE_AS7 3729
+  #define NOTE_B7  3951
+  #define NOTE_C8  4186
+  #define NOTE_CS8 4435
+  #define NOTE_D8  4699
+  #define NOTE_DS8 4978
+  #define REST      0
+
+
+  // change this to make the song slower or faster
+  int tempo = 140;
+
+
+  // notes of the moledy followed by the duration.
+  // a 4 means a quarter note, 8 an eighteenth , 16 sixteenth, so on
+  // !!negative numbers are used to represent dotted notes,
+  // so -4 means a dotted quarter note, that is, a quarter plus an eighteenth!!
+  int melody[] = {
+
+    // Silent Night, Original Version
+    // Score available at https://musescore.com/marcsabatella/scores/3123436
+
+    NOTE_G4,-4, NOTE_A4,8, NOTE_G4,4,
+    NOTE_E4,-2, 
+    NOTE_G4,-4, NOTE_A4,8, NOTE_G4,4,
+    NOTE_E4,-2, 
+    NOTE_D5,2, NOTE_D5,4,
+    NOTE_B4,-2,
+    NOTE_C5,2, NOTE_C5,4,
+    NOTE_G4,-2,
+
+    NOTE_A4,2, NOTE_A4,4,
+    NOTE_C5,-4, NOTE_B4,8, NOTE_A4,4,
+    NOTE_G4,-4, NOTE_A4,8, NOTE_G4,4,
+    NOTE_E4,-2, 
+    NOTE_A4,2, NOTE_A4,4,
+    NOTE_C5,-4, NOTE_B4,8, NOTE_A4,4,
+    NOTE_G4,-4, NOTE_A4,8, NOTE_G4,4,
+    NOTE_E4,-2, 
+    
+    NOTE_D5,2, NOTE_D5,4,
+    NOTE_F5,-4, NOTE_D5,8, NOTE_B4,4,
+    NOTE_C5,-2,
+    NOTE_E5,-2,
+    NOTE_C5,4, NOTE_G4,4, NOTE_E4,4,
+    NOTE_G4,-4, NOTE_F4,8, NOTE_D4,4,
+    NOTE_C4,-2,
+    NOTE_C4,-1,
+    
+    
+    
+    
+    
+    
+  };
+
+  // sizeof gives the number of bytes, each int value is composed of two bytes (16 bits)
+  // there are two values per note (pitch and duration), so for each note there are four bytes
+  int notes = sizeof(melody) / sizeof(melody[0]) / 2;
+
+  // this calculates the duration of a whole note in ms
+  int wholenote = (60000 * 4) / tempo;
+
+  int divider = 0, noteDuration = 0;
+
+  // iterate over the notes of the melody.
+  // Remember, the array is twice the number of notes (notes + durations)
+  for (int thisNote = 0; thisNote < notes * 2; thisNote = thisNote + 2) {
+
+    // calculates the duration of each note
+    divider = melody[thisNote + 1];
+    if (divider > 0) {
+      // regular note, just proceed
+      noteDuration = (wholenote) / divider;
+    } else if (divider < 0) {
+      // dotted notes are represented with negative durations!!
+      noteDuration = (wholenote) / abs(divider);
+      noteDuration *= 1.5; // increases the duration in half for dotted notes
+    }
+
+    // we only play the note for 90% of the duration, leaving 10% as a pause
+    tone(BUZZER, melody[thisNote], noteDuration * 0.9);
+
+    luzinha(); //faz os LEDs piscarem aleatoriamente durante a música
+
+    // Wait for the specief duration before playing the next note.
+    delay(noteDuration);
+
+    // stop the waveform generation before the next note.
+    noTone(BUZZER);
+  }
+}
+
+void jigglypuff () {  //toca jigglypuff's song (Pokemon)
+  #define NOTE_B0  31
+  #define NOTE_C1  33
+  #define NOTE_CS1 35
+  #define NOTE_D1  37
+  #define NOTE_DS1 39
+  #define NOTE_E1  41
+  #define NOTE_F1  44
+  #define NOTE_FS1 46
+  #define NOTE_G1  49
+  #define NOTE_GS1 52
+  #define NOTE_A1  55
+  #define NOTE_AS1 58
+  #define NOTE_B1  62
+  #define NOTE_C2  65
+  #define NOTE_CS2 69
+  #define NOTE_D2  73
+  #define NOTE_DS2 78
+  #define NOTE_E2  82
+  #define NOTE_F2  87
+  #define NOTE_FS2 93
+  #define NOTE_G2  98
+  #define NOTE_GS2 104
+  #define NOTE_A2  110
+  #define NOTE_AS2 117
+  #define NOTE_B2  123
+  #define NOTE_C3  131
+  #define NOTE_CS3 139
+  #define NOTE_D3  147
+  #define NOTE_DS3 156
+  #define NOTE_E3  165
+  #define NOTE_F3  175
+  #define NOTE_FS3 185
+  #define NOTE_G3  196
+  #define NOTE_GS3 208
+  #define NOTE_A3  220
+  #define NOTE_AS3 233
+  #define NOTE_B3  247
+  #define NOTE_C4  262
+  #define NOTE_CS4 277
+  #define NOTE_D4  294
+  #define NOTE_DS4 311
+  #define NOTE_E4  330
+  #define NOTE_F4  349
+  #define NOTE_FS4 370
+  #define NOTE_G4  392
+  #define NOTE_GS4 415
+  #define NOTE_A4  440
+  #define NOTE_AS4 466
+  #define NOTE_B4  494
+  #define NOTE_C5  523
+  #define NOTE_CS5 554
+  #define NOTE_D5  587
+  #define NOTE_DS5 622
+  #define NOTE_E5  659
+  #define NOTE_F5  698
+  #define NOTE_FS5 740
+  #define NOTE_G5  784
+  #define NOTE_GS5 831
+  #define NOTE_A5  880
+  #define NOTE_AS5 932
+  #define NOTE_B5  988
+  #define NOTE_C6  1047
+  #define NOTE_CS6 1109
+  #define NOTE_D6  1175
+  #define NOTE_DS6 1245
+  #define NOTE_E6  1319
+  #define NOTE_F6  1397
+  #define NOTE_FS6 1480
+  #define NOTE_G6  1568
+  #define NOTE_GS6 1661
+  #define NOTE_A6  1760
+  #define NOTE_AS6 1865
+  #define NOTE_B6  1976
+  #define NOTE_C7  2093
+  #define NOTE_CS7 2217
+  #define NOTE_D7  2349
+  #define NOTE_DS7 2489
+  #define NOTE_E7  2637
+  #define NOTE_F7  2794
+  #define NOTE_FS7 2960
+  #define NOTE_G7  3136
+  #define NOTE_GS7 3322
+  #define NOTE_A7  3520
+  #define NOTE_AS7 3729
+  #define NOTE_B7  3951
+  #define NOTE_C8  4186
+  #define NOTE_CS8 4435
+  #define NOTE_D8  4699
+  #define NOTE_DS8 4978
+  #define REST      0
+
+
+  // change this to make the song slower or faster
+  int tempo = 85;
+
+  // notes of the moledy followed by the duration.
+  // a 4 means a quarter note, 8 an eighteenth , 16 sixteenth, so on
+  // !!negative numbers are used to represent dotted notes,
+  // so -4 means a dotted quarter note, that is, a quarter plus an eighteenth!!
+  int melody[] = {
+
+    // Jigglypuff's Song
+    // Score available at https://musescore.com/user/28109683/scores/5044153
+    
+    NOTE_D5,-4, NOTE_A5,8, NOTE_FS5,8, NOTE_D5,8,
+    NOTE_E5,-4, NOTE_FS5,8, NOTE_G5,4,
+    NOTE_FS5,-4, NOTE_E5,8, NOTE_FS5,4,
+    NOTE_D5,-2,
+    NOTE_D5,-4, NOTE_A5,8, NOTE_FS5,8, NOTE_D5,8,
+    NOTE_E5,-4, NOTE_FS5,8, NOTE_G5,4,
+    NOTE_FS5,-1,
+    NOTE_D5,-4, NOTE_A5,8, NOTE_FS5,8, NOTE_D5,8,
+    NOTE_E5,-4, NOTE_FS5,8, NOTE_G5,4,
+    
+    NOTE_FS5,-4, NOTE_E5,8, NOTE_FS5,4,
+    NOTE_D5,-2,
+    NOTE_D5,-4, NOTE_A5,8, NOTE_FS5,8, NOTE_D5,8,
+    NOTE_E5,-4, NOTE_FS5,8, NOTE_G5,4,
+    NOTE_FS5,-1,
+    
+  };
+
+  // sizeof gives the number of bytes, each int value is composed of two bytes (16 bits)
+  // there are two values per note (pitch and duration), so for each note there are four bytes
+  int notes = sizeof(melody) / sizeof(melody[0]) / 2;
+
+  // this calculates the duration of a whole note in ms
+  int wholenote = (60000 * 4) / tempo;
+
+  int divider = 0, noteDuration = 0;
+
+
+  // iterate over the notes of the melody.
+  // Remember, the array is twice the number of notes (notes + durations)
+  for (int thisNote = 0; thisNote < notes * 2; thisNote = thisNote + 2) {
+
+    // calculates the duration of each note
+    divider = melody[thisNote + 1];
+    if (divider > 0) {
+      // regular note, just proceed
+      noteDuration = (wholenote) / divider;
+    } else if (divider < 0) {
+      // dotted notes are represented with negative durations!!
+      noteDuration = (wholenote) / abs(divider);
+      noteDuration *= 1.5; // increases the duration in half for dotted notes
+    }
+
+    // we only play the note for 90% of the duration, leaving 10% as a pause
+    tone(BUZZER, melody[thisNote], noteDuration * 0.9);
+
+    luzinha(); //faz os LEDs piscarem aleatoriamente durante a música
+
+    // Wait for the specief duration before playing the next note.
+    delay(noteDuration);
+
+    // stop the waveform generation before the next note.
+    noTone(BUZZER);
+  }
+}
+
+void brahms () { //toca Brahms’ Lullaby (Wiegenlied)
+  #define NOTE_B0  31
+  #define NOTE_C1  33
+  #define NOTE_CS1 35
+  #define NOTE_D1  37
+  #define NOTE_DS1 39
+  #define NOTE_E1  41
+  #define NOTE_F1  44
+  #define NOTE_FS1 46
+  #define NOTE_G1  49
+  #define NOTE_GS1 52
+  #define NOTE_A1  55
+  #define NOTE_AS1 58
+  #define NOTE_B1  62
+  #define NOTE_C2  65
+  #define NOTE_CS2 69
+  #define NOTE_D2  73
+  #define NOTE_DS2 78
+  #define NOTE_E2  82
+  #define NOTE_F2  87
+  #define NOTE_FS2 93
+  #define NOTE_G2  98
+  #define NOTE_GS2 104
+  #define NOTE_A2  110
+  #define NOTE_AS2 117
+  #define NOTE_B2  123
+  #define NOTE_C3  131
+  #define NOTE_CS3 139
+  #define NOTE_D3  147
+  #define NOTE_DS3 156
+  #define NOTE_E3  165
+  #define NOTE_F3  175
+  #define NOTE_FS3 185
+  #define NOTE_G3  196
+  #define NOTE_GS3 208
+  #define NOTE_A3  220
+  #define NOTE_AS3 233
+  #define NOTE_B3  247
+  #define NOTE_C4  262
+  #define NOTE_CS4 277
+  #define NOTE_D4  294
+  #define NOTE_DS4 311
+  #define NOTE_E4  330
+  #define NOTE_F4  349
+  #define NOTE_FS4 370
+  #define NOTE_G4  392
+  #define NOTE_GS4 415
+  #define NOTE_A4  440
+  #define NOTE_AS4 466
+  #define NOTE_B4  494
+  #define NOTE_C5  523
+  #define NOTE_CS5 554
+  #define NOTE_D5  587
+  #define NOTE_DS5 622
+  #define NOTE_E5  659
+  #define NOTE_F5  698
+  #define NOTE_FS5 740
+  #define NOTE_G5  784
+  #define NOTE_GS5 831
+  #define NOTE_A5  880
+  #define NOTE_AS5 932
+  #define NOTE_B5  988
+  #define NOTE_C6  1047
+  #define NOTE_CS6 1109
+  #define NOTE_D6  1175
+  #define NOTE_DS6 1245
+  #define NOTE_E6  1319
+  #define NOTE_F6  1397
+  #define NOTE_FS6 1480
+  #define NOTE_G6  1568
+  #define NOTE_GS6 1661
+  #define NOTE_A6  1760
+  #define NOTE_AS6 1865
+  #define NOTE_B6  1976
+  #define NOTE_C7  2093
+  #define NOTE_CS7 2217
+  #define NOTE_D7  2349
+  #define NOTE_DS7 2489
+  #define NOTE_E7  2637
+  #define NOTE_F7  2794
+  #define NOTE_FS7 2960
+  #define NOTE_G7  3136
+  #define NOTE_GS7 3322
+  #define NOTE_A7  3520
+  #define NOTE_AS7 3729
+  #define NOTE_B7  3951
+  #define NOTE_C8  4186
+  #define NOTE_CS8 4435
+  #define NOTE_D8  4699
+  #define NOTE_DS8 4978
+  #define REST      0
+
+
+  // change this to make the song slower or faster
+  int tempo = 76;
+
+  // notes of the moledy followed by the duration.
+  // a 4 means a quarter note, 8 an eighteenth , 16 sixteenth, so on
+  // !!negative numbers are used to represent dotted notes,
+  // so -4 means a dotted quarter note, that is, a quarter plus an eighteenth!!
+  int melody[] = {
+
+    // Wiegenlied (Brahms' Lullaby)
+    // Score available at https://www.flutetunes.com/tunes.php?id=54
+
+    NOTE_G4, 4, NOTE_G4, 4, //1
+    NOTE_AS4, -4, NOTE_G4, 8, NOTE_G4, 4,
+    NOTE_AS4, 4, REST, 4, NOTE_G4, 8, NOTE_AS4, 8,
+    NOTE_DS5, 4, NOTE_D5, -4, NOTE_C5, 8,
+    NOTE_C5, 4, NOTE_AS4, 4, NOTE_F4, 8, NOTE_G4, 8,
+    NOTE_GS4, 4, NOTE_F4, 4, NOTE_F4, 8, NOTE_G4, 8,
+    NOTE_GS4, 4, REST, 4, NOTE_F4, 8, NOTE_GS4, 8,
+    NOTE_D5, 8, NOTE_C5, 8, NOTE_AS4, 4, NOTE_D5, 4,
+
+    NOTE_DS5, 4, REST, 4, NOTE_DS4, 8, NOTE_DS4, 8, //8
+    NOTE_DS5, 2, NOTE_C5, 8, NOTE_GS4, 8,
+    NOTE_AS4, 2, NOTE_G4, 8, NOTE_DS4, 8,
+    NOTE_GS4, 4, NOTE_AS4, 4, NOTE_C5, 4,
+    NOTE_AS4, 2, NOTE_DS4, 8, NOTE_DS4, 8,
+    NOTE_DS5, 2, NOTE_C5, 8, NOTE_GS4, 8,
+    NOTE_AS4, 2, NOTE_G4, 8, NOTE_DS4, 8,
+    NOTE_AS4, 4, NOTE_G4, 4, NOTE_DS4, 4,
+    NOTE_DS4, 2
+
+  };
+
+  // sizeof gives the number of bytes, each int valsmaue is composed of two bytes (16 bits)
+  // there are two values per note (pitch and duration), so for each note there are four bytes
+  int notes = sizeof(melody) / sizeof(melody[0]) / 2;
+
+  // this calculates the duration of a whole note in ms
+  int wholenote = (60000 * 4) / tempo;
+
+  int divider = 0, noteDuration = 0;
+
+  // iterate over the notes of the melody.
+  // Remember, the array is twice the number of notes (notes + durations)
+  for (int thisNote = 0; thisNote < notes * 2; thisNote = thisNote + 2) {
+
+    // calculates the duration of each note
+    divider = melody[thisNote + 1];
+    if (divider > 0) {
+      // regular note, just proceed
+      noteDuration = (wholenote) / divider;
+    } else if (divider < 0) {
+      // dotted notes are represented with negative durations!!
+      noteDuration = (wholenote) / abs(divider);
+      noteDuration *= 1.5; // increases the duration in half for dotted notes
+    }
+
+    // we only play the note for 90% of the duration, leaving 10% as a pause
+    tone(BUZZER, melody[thisNote], noteDuration * 0.9);
+
+    luzinha(); //faz os LEDs piscarem aleatoriamente durante a música
+
+    // Wait for the specief duration before playing the next note.
+    delay(noteDuration);
+
+    // stop the waveform generation before the next note.
+    noTone(BUZZER);
+  }
+}
+
+void tetrisMenu () { //toca tema de tetris e verifica modo de jogo
+  #define NOTE_B0  31
+  #define NOTE_C1  33
+  #define NOTE_CS1 35
+  #define NOTE_D1  37
+  #define NOTE_DS1 39
+  #define NOTE_E1  41
+  #define NOTE_F1  44
+  #define NOTE_FS1 46
+  #define NOTE_G1  49
+  #define NOTE_GS1 52
+  #define NOTE_A1  55
+  #define NOTE_AS1 58
+  #define NOTE_B1  62
+  #define NOTE_C2  65
+  #define NOTE_CS2 69
+  #define NOTE_D2  73
+  #define NOTE_DS2 78
+  #define NOTE_E2  82
+  #define NOTE_F2  87
+  #define NOTE_FS2 93
+  #define NOTE_G2  98
+  #define NOTE_GS2 104
+  #define NOTE_A2  110
+  #define NOTE_AS2 117
+  #define NOTE_B2  123
+  #define NOTE_C3  131
+  #define NOTE_CS3 139
+  #define NOTE_D3  147
+  #define NOTE_DS3 156
+  #define NOTE_E3  165
+  #define NOTE_F3  175
+  #define NOTE_FS3 185
+  #define NOTE_G3  196
+  #define NOTE_GS3 208
+  #define NOTE_A3  220
+  #define NOTE_AS3 233
+  #define NOTE_B3  247
+  #define NOTE_C4  262
+  #define NOTE_CS4 277
+  #define NOTE_D4  294
+  #define NOTE_DS4 311
+  #define NOTE_E4  330
+  #define NOTE_F4  349
+  #define NOTE_FS4 370
+  #define NOTE_G4  392
+  #define NOTE_GS4 415
+  #define NOTE_A4  440
+  #define NOTE_AS4 466
+  #define NOTE_B4  494
+  #define NOTE_C5  523
+  #define NOTE_CS5 554
+  #define NOTE_D5  587
+  #define NOTE_DS5 622
+  #define NOTE_E5  659
+  #define NOTE_F5  698
+  #define NOTE_FS5 740
+  #define NOTE_G5  784
+  #define NOTE_GS5 831
+  #define NOTE_A5  880
+  #define NOTE_AS5 932
+  #define NOTE_B5  988
+  #define NOTE_C6  1047
+  #define NOTE_CS6 1109
+  #define NOTE_D6  1175
+  #define NOTE_DS6 1245
+  #define NOTE_E6  1319
+  #define NOTE_F6  1397
+  #define NOTE_FS6 1480
+  #define NOTE_G6  1568
+  #define NOTE_GS6 1661
+  #define NOTE_A6  1760
+  #define NOTE_AS6 1865
+  #define NOTE_B6  1976
+  #define NOTE_C7  2093
+  #define NOTE_CS7 2217
+  #define NOTE_D7  2349
+  #define NOTE_DS7 2489
+  #define NOTE_E7  2637
+  #define NOTE_F7  2794
+  #define NOTE_FS7 2960
+  #define NOTE_G7  3136
+  #define NOTE_GS7 3322
+  #define NOTE_A7  3520
+  #define NOTE_AS7 3729
+  #define NOTE_B7  3951
+  #define NOTE_C8  4186
+  #define NOTE_CS8 4435
+  #define NOTE_D8  4699
+  #define NOTE_DS8 4978
+  #define REST 0
+
+  // change this to make the song slower or faster
+  int tempo=144; 
+
+  // notes of the moledy followed by the duration.
+  // a 4 means a quarter note, 8 an eighteenth , 16 sixteenth, so on
+  // !!negative numbers are used to represent dotted notes,
+  // so -4 means a dotted quarter note, that is, a quarter plus an eighteenth!!
+  int melody[] = {
+
+    //Based on the arrangement at https://www.flutetunes.com/tunes.php?id=192
+    
+    NOTE_E5, 4,  NOTE_B4,8,  NOTE_C5,8,  NOTE_D5,4,  NOTE_C5,8,  NOTE_B4,8,
+    NOTE_A4, 4,  NOTE_A4,8,  NOTE_C5,8,  NOTE_E5,4,  NOTE_D5,8,  NOTE_C5,8,
+    NOTE_B4, -4,  NOTE_C5,8,  NOTE_D5,4,  NOTE_E5,4,
+    NOTE_C5, 4,  NOTE_A4,4,  NOTE_A4,8,  NOTE_A4,4,  NOTE_B4,8,  NOTE_C5,8,
+
+    NOTE_D5, -4,  NOTE_F5,8,  NOTE_A5,4,  NOTE_G5,8,  NOTE_F5,8,
+    NOTE_E5, -4,  NOTE_C5,8,  NOTE_E5,4,  NOTE_D5,8,  NOTE_C5,8,
+    NOTE_B4, 4,  NOTE_B4,8,  NOTE_C5,8,  NOTE_D5,4,  NOTE_E5,4,
+    NOTE_C5, 4,  NOTE_A4,4,  NOTE_A4,4, REST, 4,
+
+    NOTE_E5, 4,  NOTE_B4,8,  NOTE_C5,8,  NOTE_D5,4,  NOTE_C5,8,  NOTE_B4,8,
+    NOTE_A4, 4,  NOTE_A4,8,  NOTE_C5,8,  NOTE_E5,4,  NOTE_D5,8,  NOTE_C5,8,
+    NOTE_B4, -4,  NOTE_C5,8,  NOTE_D5,4,  NOTE_E5,4,
+    NOTE_C5, 4,  NOTE_A4,4,  NOTE_A4,8,  NOTE_A4,4,  NOTE_B4,8,  NOTE_C5,8,
+
+    NOTE_D5, -4,  NOTE_F5,8,  NOTE_A5,4,  NOTE_G5,8,  NOTE_F5,8,
+    NOTE_E5, -4,  NOTE_C5,8,  NOTE_E5,4,  NOTE_D5,8,  NOTE_C5,8,
+    NOTE_B4, 4,  NOTE_B4,8,  NOTE_C5,8,  NOTE_D5,4,  NOTE_E5,4,
+    NOTE_C5, 4,  NOTE_A4,4,  NOTE_A4,4, REST, 4,
+    
+
+    NOTE_E5,2,  NOTE_C5,2,
+    NOTE_D5,2,   NOTE_B4,2,
+    NOTE_C5,2,   NOTE_A4,2,
+    NOTE_GS4,2,  NOTE_B4,4,  REST,8, 
+    NOTE_E5,2,   NOTE_C5,2,
+    NOTE_D5,2,   NOTE_B4,2,
+    NOTE_C5,4,   NOTE_E5,4,  NOTE_A5,2,
+    NOTE_GS5,2,
+
+  };
+
+  // sizeof gives the number of bytes, each int value is composed of two bytes (16 bits)
+  // there are two values per note (pitch and duration), so for each note there are four bytes
+  int notes=sizeof(melody)/sizeof(melody[0])/2; 
+
+  // this calculates the duration of a whole note in ms (60s/tempo)*4 beats
+  int wholenote = (60000 * 4) / tempo;
+
+  int divider = 0, noteDuration = 0;
+
+  // iterate over the notes of the melody. 
+  // Remember, the array is twice the number of notes (notes + durations)
+  for (int thisNote = 0; thisNote < notes * 2; thisNote = thisNote + 2) {
+
+    // calculates the duration of each note
+    divider = melody[thisNote + 1];
+    if (divider > 0) {
+      // regular note, just proceed
+      noteDuration = (wholenote) / divider;
+    } else if (divider < 0) {
+      // dotted notes are represented with negative durations!!
+      noteDuration = (wholenote) / abs(divider);
+      noteDuration *= 1.5; // increases the duration in half for dotted notes
+    }
+
+    verificaModo(); //Verifica o dip switch e inicia modo escolhido
+
+    // we only play the note for 90% of the duration, leaving 10% as a pause
+    tone(BUZZER, melody[thisNote], noteDuration*0.9);
+
+    luzinha(); //faz os LEDs piscarem aleatoriamente durante a música
+
+    // Wait for the specief duration before playing the next note.
+    delay(noteDuration);
+    
     // stop the waveform generation before the next note.
     noTone(BUZZER);
   }
@@ -656,7 +1512,6 @@ void PlayerWin(int p1NewState, int p2NewState, int p3NewState, int p4NewState) {
   }
   takeOnMeSemLuzinha();
   lcd.clear();
-  
 }
 
 void WinTimer() {
@@ -725,9 +1580,11 @@ void Debug() {
 
 //  FUNÇÕES SIMON
 void modoDemo() {
-  lcd.clear();
-  lcd.setCursor(5, 0);
-  lcd.print("SIMON");
+  lcd.setCursor(3, 0);
+  lcd.print("PRESSIONE");
+  lcd.setCursor(4, 1);
+  lcd.print("UM BOTAO");
+
 
   currentTime = millis();
   if ((currentTime - lastTime) > 100) {
@@ -775,24 +1632,6 @@ void modoDemo() {
 
 // Função Modo Jogo, dividida em duas partes, inicialização e Jogo propriamente dito
 void modoJogo() {
-  /*while (true) {
-    if (etapaJogo == 0) {
-      inicioJogo();   // Faz efeito de leds de inicialização
-      etapaJogo++;
-    } else if (etapaJogo == 1) {
-      turnoArduino();
-      int resposta = turnoJogador();
-      if (resposta == 0 || resposta ==2) {
-        etapaJogo--;
-        continue;
-      }
-    }
-  }*/
-
-
-
-
-
   switch (etapaJogo) {
     case 0:
       inicioJogo();   // Faz efeito de leds de inicialização
@@ -815,7 +1654,6 @@ void inicioJogo() {
   for (int i = 0; i < 10; i++) {
     digitalWrite(LED_VERMELHO, LOW);
     delay(40);
-
     digitalWrite(LED_AMARELO, HIGH);
     delay(40);
     digitalWrite(LED_VERDE, LOW);
@@ -910,7 +1748,6 @@ void turnoJogador() {
       statusJogo = 0;
       etapaJogo = 0;
       perdeJogo();
-      //return 0;
       break;
     }
   }
@@ -918,10 +1755,8 @@ void turnoJogador() {
   faseJogo++;             // Incrementa fase
   if (faseJogo == sizeof(memJogo) / sizeof(memJogo[0])) {
     ganhouJogo();     // ganhou jogo e faz efeito do ganhador
-    //return 2;
   }
   apagaLeds();
-  //return 1;
 }
 
 // Função para ler botões no modo demonstação, com lógica para sair do modo se pressionou botão
@@ -1071,7 +1906,7 @@ void ganhouJogo() {
   apagaLeds();
 }
 
-// Função para acender os Leds, conforme status passado pelas variáveis
+// Função para acender os Leds, conforme status passado pelas variáveis (apenas SIMON)
 void acendeLeds(int ledVM, int ledAM, int ledVD, int ledAZ) {
   digitalWrite(LED_VERMELHO, ledVM);
   digitalWrite(LED_AMARELO, ledAM);
@@ -1174,58 +2009,162 @@ void presskill () { //função com o modo de jogo presskill
     // Debug to the console
     Debug();
   }
+  return;
 }
 
-void escolhaDeModo () { //função para escolher o modo de jogo
-  digitalWrite(LED_AZUL, HIGH);
-  digitalWrite(LED_AMARELO, HIGH);
+void verificaModo () {
+  statusD1 = digitalRead(DIPS1);  //SIMON
+  statusD2 = digitalRead(DIPS2);  //PRESSKILL
+  statusD3 = digitalRead(DIPS3);  //SONG
+  statusD4 = digitalRead(DIPS4);  //DJ
 
-  lcd.setCursor(0, 0);
-  lcd.print("Simon     -> azl");
-  lcd.setCursor(0, 1);
-  lcd.print("Presskill -> amr");
-
-  if (digitalRead(B1) == HIGH) { //simon
+  if (!statusD1) { //Simon
     lcd.clear();
     lcd.setCursor(5, 0);
     lcd.print("SIMON");
-
-    Serial.println("    SIMON");
-    tone(BUZZER,781);    
-    delay(100);
-    apagaLeds();
-    noTone(BUZZER);
     digitalWrite(LED_AZUL, HIGH);
-
-    delay(2000);
-    simon();
-  }
-
-  if (digitalRead(B2) == HIGH) { //presskill
-    lcd.clear();
-    lcd.setCursor(3, 0);
-    lcd.print("PRESSKILL");
-
-    Serial.println("    PRESSKILL");
-    tone(BUZZER,781);    
-    delay(100);
-    apagaLeds();
-    noTone(BUZZER);
     digitalWrite(LED_AMARELO, HIGH);
+    digitalWrite(LED_VERDE, HIGH);
+    digitalWrite(LED_VERMELHO, HIGH);
+    delay(1000);
+    apagaLeds();
+    delay(500);
+    lcd.clear();
 
-
-    delay(2000);
-    presskill();
+    while (!statusD1) {
+      lcd.clear();
+      simon();
+      statusD1 = digitalRead(DIPS1);
+    }
+    return;
   }
+  if (!statusD2) { //Presskill
+    lcd.clear();
+    presskill();
+    statusD2 = digitalRead(DIPS2);
+    return;
+  }
+  if (!statusD3) { //Songs
+    lcd.clear();
 
-  if (digitalRead(B5) == HIGH) {
-    encerraJogo();
+    while (!statusD3) {
+      lcd.setCursor(5, 0);
+      lcd.print("Music");
+      lcd.setCursor(5, 1);
+      lcd.print("Player");
+      apagaLeds();
+      furElise(); //B1
+      if (digitalRead(B2) == HIGH) { //silent night
+        lcd.clear();
+        lcd.print("Silent Night");
+        lcd.setCursor(0, 1);
+        lcd.print("Frank Sinatra");
+        silentNight();
+        lcd.clear();
+      }
+      if (digitalRead(B3) == HIGH) { //take on me
+        lcd.clear();
+        lcd.print("Take on me");
+        lcd.setCursor(0, 1);
+        lcd.print("A-HA");
+        takeOnMe();
+        lcd.clear();
+      }
+      if (digitalRead(B4) == HIGH) {  //The Godfather theme
+        lcd.clear();
+        lcd.print("The Godfather");
+        lcd.setCursor(0, 1);
+        lcd.print("Nino Rota");
+        theGodfather();
+        lcd.clear();
+      }
+      if (digitalRead(B5) == HIGH) {  //Jigglypuff's Song
+        lcd.clear();
+        lcd.print("JIGGLYPUFF SONG");
+        lcd.setCursor(0, 1);
+        lcd.print("Pokemon");
+        jigglypuff();
+        lcd.clear();
+      }
+      if (digitalRead(B6) == HIGH) {  //Brahms
+        lcd.clear();
+        lcd.print("Wiegenlied");
+        lcd.setCursor(0, 1);
+        lcd.print("Johannes Brahms");
+        brahms();
+        lcd.clear();
+      }
+
+      statusD3 = digitalRead(DIPS3);
+    }
+    return;
+  }
+  if (!statusD4) { //DJ
+    lcd.clear();
+    lcd.setCursor(7, 0);
+    lcd.print("DJ");
+    apagaLeds();
+
+    while (!statusD4) {
+      if (digitalRead(B1) == HIGH) {
+        tone(BUZZER,392);  
+        digitalWrite(LED_AZUL, HIGH);  
+        delay(100);
+        noTone(BUZZER);
+        digitalWrite(LED_AZUL, LOW);
+      }
+      if (digitalRead(B2) == HIGH) {
+        tone(BUZZER,440);
+        digitalWrite(LED_AMARELO, HIGH); 
+        delay(100);
+        noTone(BUZZER);
+        digitalWrite(LED_AMARELO, LOW);
+      }
+      if (digitalRead(B3) == HIGH) {
+        tone(BUZZER,468);
+        digitalWrite(LED_VERDE, HIGH);  
+        delay(100);
+        noTone(BUZZER);
+        digitalWrite(LED_VERDE, LOW);
+      }
+      if (digitalRead(B4) == HIGH) {
+        tone(BUZZER,663);
+        digitalWrite(LED_VERMELHO, HIGH);   
+        delay(100);
+        noTone(BUZZER);
+        digitalWrite(LED_VERMELHO, LOW);
+      }
+      if (digitalRead(B5) == HIGH) {
+        tone(BUZZER,178);
+        digitalWrite(LED_AZUL, HIGH);
+        digitalWrite(LED_AMARELO, HIGH);
+        delay(100);
+        noTone(BUZZER);
+        digitalWrite(LED_AZUL, LOW);
+        digitalWrite(LED_AMARELO, LOW);
+      }
+      if (digitalRead(B6) == HIGH) {
+        tone(BUZZER,781);
+        digitalWrite(LED_VERDE, HIGH);
+        digitalWrite(LED_VERMELHO, HIGH);  
+        delay(100);
+        noTone(BUZZER);
+        digitalWrite(LED_VERDE, LOW);
+        digitalWrite(LED_VERMELHO, LOW);
+      }
+
+      statusD4 = digitalRead(DIPS4);
+    }
   }
 }
 
 void encerraJogo() {
-  apagaLeds();
-  exit(0);
+  stateB5 = digitalRead(B5);
+
+  if (stateB5) {
+    apagaLeds();
+    exit(0);
+  }
 }
 
 
@@ -1242,11 +2181,11 @@ void setup() {
   lcd.init();  // initialize the lcd
   lcd.backlight();
   // lcd.setCursor(COLUNA, LINHA);
-  lcd.setCursor(0, 0);
-  lcd.print("     CEFET");
-  // lcd.setCursor(0, 1);
-  // lcd.print("Extensao OAs");
-  //lcd.clear();
+  lcd.setCursor(5, 0);
+  lcd.print("CEFET");
+  lcd.setCursor(2, 1);
+  lcd.print("Extensao OAs");
+  delay(1000);
 
 
   // Configuracao de pinos dos botoes
@@ -1281,181 +2220,14 @@ void setup() {
 
 // the loop function runs over and over again forever
 void loop() {
-  apagaLeds();
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("1)SIMON  3)SONGS");
+  lcd.setCursor(0, 1);
+  lcd.print("2)PRESSKILL 4)DJ");
+  tetrisMenu();
 
-  // ACENDE/APAGA OS LEDS - LOW:apaga, HIGH:acende
-  // digitalWrite(LED_AZUL, LOW);
-  // digitalWrite(LED_AMARELO, LOW);
-  // digitalWrite(LED_VERDE, LOW);
-  // digitalWrite(LED_VERMELHO, LOW);
-
-  // DIP SWITCH
-  if (digitalRead(DIPS1) == LOW) {
-    Serial.println("DIPS1 on");
-    digitalWrite(LED_AZUL, HIGH);
-    delay(500);
-    digitalWrite(LED_AMARELO, HIGH);
-    delay(500);
-    digitalWrite(LED_VERDE, HIGH);
-    delay(500);
-    digitalWrite(LED_VERMELHO, HIGH);
-    delay(500);
-    digitalWrite(LED_AZUL, LOW);
-    delay(500);
-    digitalWrite(LED_AMARELO, LOW);
-    delay(500);
-    digitalWrite(LED_VERDE, LOW);
-    delay(500);
-    digitalWrite(LED_VERMELHO, LOW);
-    delay(500);
-    return;
-  }
-  if (digitalRead(DIPS2) == LOW) { //sons emitidos simom
-    Serial.println("DIPS2 on");
-    if (digitalRead(B1) == HIGH) {
-      tone(BUZZER,392);    
-      delay(100);
-      noTone(BUZZER);
-      delay(100);
-      digitalWrite(LED_AZUL, HIGH);
-      delay(100);
-      digitalWrite(LED_AZUL, LOW);
-      return;
-    } else {
-      Serial.println("B1 LOW");
-    }
-    if (digitalRead(B2) == HIGH) {
-      tone(BUZZER,440);    
-      delay(100);
-      noTone(BUZZER);
-      delay(100);
-      digitalWrite(LED_AMARELO, HIGH);
-      delay(100);
-      digitalWrite(LED_AMARELO, LOW);
-    } else {
-      Serial.println("B2 LOW");
-    }
-    if (digitalRead(B3) == HIGH) {
-      tone(BUZZER,468);    
-      delay(100);
-      noTone(BUZZER);
-      delay(100);
-      digitalWrite(LED_VERDE, HIGH);
-      delay(100);
-      digitalWrite(LED_VERDE, LOW);
-    } else {
-      Serial.println("B3 LOW");
-    }
-    if (digitalRead(B4) == HIGH) {
-      tone(BUZZER,663);    
-      delay(100);
-      noTone(BUZZER);
-      delay(100);
-      digitalWrite(LED_VERMELHO, HIGH);
-      delay(100);
-      digitalWrite(LED_VERMELHO, LOW);
-    } else {
-      Serial.println("B4 LOW");
-    }
-    if (digitalRead(B5) == HIGH) {
-      tone(BUZZER,200); 
-      for (int i = 1; i <= 3; i++) { //quando errar a ordem
-        digitalWrite(LED_AZUL, HIGH);
-        digitalWrite(LED_AMARELO, HIGH);
-        digitalWrite(LED_VERDE, HIGH);
-        digitalWrite(LED_VERMELHO, HIGH);
-        delay(200);
-        digitalWrite(LED_AZUL, LOW);
-        digitalWrite(LED_AMARELO, LOW);
-        digitalWrite(LED_VERDE, LOW);
-        digitalWrite(LED_VERMELHO, LOW);
-        delay(200);
-      }   
-      noTone(BUZZER);
-    } else {
-      Serial.println("B5 LOW");
-    }
-    if (digitalRead(B6) == HIGH) {
-      tone(BUZZER,781);    
-      delay(100);
-      noTone(BUZZER);
-      delay(100);
-      digitalWrite(LED_VERDE, HIGH);
-      digitalWrite(LED_VERMELHO, HIGH);
-      delay(100);
-      digitalWrite(LED_VERDE, LOW);
-      digitalWrite(LED_VERMELHO, LOW);
-    } else {
-      Serial.println("B6 LOW");
-    }
-    return;
-  }
-  if (digitalRead(DIPS3) == LOW) { //teste programa
-    escolhaDeModo();
-
-    //simon();
-    return;
-  }
-  if (digitalRead(DIPS4) == LOW) {
-    Serial.println("DIPS4 on");
-    digitalWrite(LED_AZUL, LOW);
-    digitalWrite(LED_AMARELO, LOW);
-    digitalWrite(LED_VERDE, LOW);
-    digitalWrite(LED_VERMELHO, LOW);
-    furElise();
-    if (digitalRead(B6) == HIGH) { //take on me
-      lcd.clear();
-      lcd.print("Take on me");
-      lcd.setCursor(0, 1);
-      lcd.print("A-HA");
-      takeOnMe();
-      lcd.clear();
-    }
-  }
-
-
-  // PRESSIONAMENTO BOTOES
-  if (digitalRead(B1) == HIGH) {
-    Serial.println("B1 HIGH");
-  } else {
-    Serial.println("B1 LOW");
-  }
-  if (digitalRead(B2) == HIGH) {
-    Serial.println("B2 HIGH");
-  } else {
-    Serial.println("B2 LOW");
-  }
-  if (digitalRead(B3) == HIGH) {
-    Serial.println("B3 HIGH");
-  } else {
-    Serial.println("B3 LOW");
-  }
-  if (digitalRead(B4) == HIGH) {
-    Serial.println("B4 HIGH");
-  } else {
-    Serial.println("B4 LOW");
-  }
-  if (digitalRead(B5) == HIGH) {
-    Serial.println("B5 HIGH");
-    encerraJogo();
-  } else {
-    Serial.println("B5 LOW");
-  }
-  if (digitalRead(B6) == HIGH) {
-    Serial.println("B6 HIGH");
-  } else {
-    Serial.println("B6 LOW");
-  }
-
-  //BUZZER
-  // digitalWrite(BUZZER, HIGH);
-  // delay(1000);
-  // digitalWrite(BUZZER, LOW);
-  // delay(1000);
-
-
-  // AGUARDA 1 SEGUNDO
-  delay(1000);
+  // ACENDE|APAGA OS LEDS - LOW:apaga, HIGH:acende
 }
 
 
