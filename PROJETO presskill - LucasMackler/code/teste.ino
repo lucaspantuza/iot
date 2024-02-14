@@ -904,167 +904,6 @@ void silentNight () { //toca Silent Night
   }
 }
 
-void jigglypuff () {  //toca jigglypuff's song (Pokemon)
-  #define NOTE_B0  31
-  #define NOTE_C1  33
-  #define NOTE_CS1 35
-  #define NOTE_D1  37
-  #define NOTE_DS1 39
-  #define NOTE_E1  41
-  #define NOTE_F1  44
-  #define NOTE_FS1 46
-  #define NOTE_G1  49
-  #define NOTE_GS1 52
-  #define NOTE_A1  55
-  #define NOTE_AS1 58
-  #define NOTE_B1  62
-  #define NOTE_C2  65
-  #define NOTE_CS2 69
-  #define NOTE_D2  73
-  #define NOTE_DS2 78
-  #define NOTE_E2  82
-  #define NOTE_F2  87
-  #define NOTE_FS2 93
-  #define NOTE_G2  98
-  #define NOTE_GS2 104
-  #define NOTE_A2  110
-  #define NOTE_AS2 117
-  #define NOTE_B2  123
-  #define NOTE_C3  131
-  #define NOTE_CS3 139
-  #define NOTE_D3  147
-  #define NOTE_DS3 156
-  #define NOTE_E3  165
-  #define NOTE_F3  175
-  #define NOTE_FS3 185
-  #define NOTE_G3  196
-  #define NOTE_GS3 208
-  #define NOTE_A3  220
-  #define NOTE_AS3 233
-  #define NOTE_B3  247
-  #define NOTE_C4  262
-  #define NOTE_CS4 277
-  #define NOTE_D4  294
-  #define NOTE_DS4 311
-  #define NOTE_E4  330
-  #define NOTE_F4  349
-  #define NOTE_FS4 370
-  #define NOTE_G4  392
-  #define NOTE_GS4 415
-  #define NOTE_A4  440
-  #define NOTE_AS4 466
-  #define NOTE_B4  494
-  #define NOTE_C5  523
-  #define NOTE_CS5 554
-  #define NOTE_D5  587
-  #define NOTE_DS5 622
-  #define NOTE_E5  659
-  #define NOTE_F5  698
-  #define NOTE_FS5 740
-  #define NOTE_G5  784
-  #define NOTE_GS5 831
-  #define NOTE_A5  880
-  #define NOTE_AS5 932
-  #define NOTE_B5  988
-  #define NOTE_C6  1047
-  #define NOTE_CS6 1109
-  #define NOTE_D6  1175
-  #define NOTE_DS6 1245
-  #define NOTE_E6  1319
-  #define NOTE_F6  1397
-  #define NOTE_FS6 1480
-  #define NOTE_G6  1568
-  #define NOTE_GS6 1661
-  #define NOTE_A6  1760
-  #define NOTE_AS6 1865
-  #define NOTE_B6  1976
-  #define NOTE_C7  2093
-  #define NOTE_CS7 2217
-  #define NOTE_D7  2349
-  #define NOTE_DS7 2489
-  #define NOTE_E7  2637
-  #define NOTE_F7  2794
-  #define NOTE_FS7 2960
-  #define NOTE_G7  3136
-  #define NOTE_GS7 3322
-  #define NOTE_A7  3520
-  #define NOTE_AS7 3729
-  #define NOTE_B7  3951
-  #define NOTE_C8  4186
-  #define NOTE_CS8 4435
-  #define NOTE_D8  4699
-  #define NOTE_DS8 4978
-  #define REST      0
-
-
-  // change this to make the song slower or faster
-  int tempo = 85;
-
-  // notes of the moledy followed by the duration.
-  // a 4 means a quarter note, 8 an eighteenth , 16 sixteenth, so on
-  // !!negative numbers are used to represent dotted notes,
-  // so -4 means a dotted quarter note, that is, a quarter plus an eighteenth!!
-  int melody[] = {
-
-    // Jigglypuff's Song
-    // Score available at https://musescore.com/user/28109683/scores/5044153
-    
-    NOTE_D5,-4, NOTE_A5,8, NOTE_FS5,8, NOTE_D5,8,
-    NOTE_E5,-4, NOTE_FS5,8, NOTE_G5,4,
-    NOTE_FS5,-4, NOTE_E5,8, NOTE_FS5,4,
-    NOTE_D5,-2,
-    NOTE_D5,-4, NOTE_A5,8, NOTE_FS5,8, NOTE_D5,8,
-    NOTE_E5,-4, NOTE_FS5,8, NOTE_G5,4,
-    NOTE_FS5,-1,
-    NOTE_D5,-4, NOTE_A5,8, NOTE_FS5,8, NOTE_D5,8,
-    NOTE_E5,-4, NOTE_FS5,8, NOTE_G5,4,
-    
-    NOTE_FS5,-4, NOTE_E5,8, NOTE_FS5,4,
-    NOTE_D5,-2,
-    NOTE_D5,-4, NOTE_A5,8, NOTE_FS5,8, NOTE_D5,8,
-    NOTE_E5,-4, NOTE_FS5,8, NOTE_G5,4,
-    NOTE_FS5,-1,
-    
-  };
-
-  // sizeof gives the number of bytes, each int value is composed of two bytes (16 bits)
-  // there are two values per note (pitch and duration), so for each note there are four bytes
-  int notes = sizeof(melody) / sizeof(melody[0]) / 2;
-
-  // this calculates the duration of a whole note in ms
-  int wholenote = (60000 * 4) / tempo;
-
-  int divider = 0, noteDuration = 0;
-
-
-  // iterate over the notes of the melody.
-  // Remember, the array is twice the number of notes (notes + durations)
-  for (int thisNote = 0; thisNote < notes * 2; thisNote = thisNote + 2) {
-
-    // calculates the duration of each note
-    divider = melody[thisNote + 1];
-    if (divider > 0) {
-      // regular note, just proceed
-      noteDuration = (wholenote) / divider;
-    } else if (divider < 0) {
-      // dotted notes are represented with negative durations!!
-      noteDuration = (wholenote) / abs(divider);
-      noteDuration *= 1.5; // increases the duration in half for dotted notes
-    }
-
-    // we only play the note for 90% of the duration, leaving 10% as a pause
-    tone(BUZZER, melody[thisNote], noteDuration * 0.9);
-
-    luzinha(); //faz os LEDs piscarem aleatoriamente durante a música
-
-    // Wait for the specief duration before playing the next note.
-    delay(noteDuration);
-
-    // stop the waveform generation before the next note.
-    noTone(BUZZER);
-  }
-}
-
 void brahms () { //toca Brahms’ Lullaby (Wiegenlied)
   #define NOTE_B0  31
   #define NOTE_C1  33
@@ -1228,7 +1067,7 @@ void brahms () { //toca Brahms’ Lullaby (Wiegenlied)
   }
 }
 
-void tetrisMenu () { //toca tema de tetris e verifica modo de jogo
+void tetris () { //toca tema de tetris e verifica modo de jogo
   #define NOTE_B0  31
   #define NOTE_C1  33
   #define NOTE_CS1 35
@@ -1386,8 +1225,6 @@ void tetrisMenu () { //toca tema de tetris e verifica modo de jogo
       noteDuration = (wholenote) / abs(divider);
       noteDuration *= 1.5; // increases the duration in half for dotted notes
     }
-
-    verificaModo(); //Verifica o dip switch e inicia modo escolhido
 
     // we only play the note for 90% of the duration, leaving 10% as a pause
     tone(BUZZER, melody[thisNote], noteDuration*0.9);
@@ -1580,7 +1417,7 @@ void Debug() {
 
 //  FUNÇÕES SIMON
 void modoDemo() {
-  lcd.setCursor(3, 0);
+  lcd.setCursor(4, 0);
   lcd.print("PRESSIONE");
   lcd.setCursor(4, 1);
   lcd.print("UM BOTAO");
@@ -2013,147 +1850,148 @@ void presskill () { //função com o modo de jogo presskill
 }
 
 void verificaModo () {
-  statusD1 = digitalRead(DIPS1);  //SIMON
-  statusD2 = digitalRead(DIPS2);  //PRESSKILL
-  statusD3 = digitalRead(DIPS3);  //SONG
-  statusD4 = digitalRead(DIPS4);  //DJ
+  while (true) {
+    statusD1 = digitalRead(DIPS1);  //SIMON
+    statusD2 = digitalRead(DIPS2);  //PRESSKILL
+    statusD3 = digitalRead(DIPS3);  //SONG
+    statusD4 = digitalRead(DIPS4);  //DJ
 
-  if (!statusD1) { //Simon
-    lcd.clear();
-    lcd.setCursor(5, 0);
-    lcd.print("SIMON");
-    digitalWrite(LED_AZUL, HIGH);
-    digitalWrite(LED_AMARELO, HIGH);
-    digitalWrite(LED_VERDE, HIGH);
-    digitalWrite(LED_VERMELHO, HIGH);
-    delay(1000);
-    apagaLeds();
-    delay(500);
-    lcd.clear();
-
-    while (!statusD1) {
+    if (!statusD1) { //Simon
       lcd.clear();
-      simon();
-      statusD1 = digitalRead(DIPS1);
-    }
-    return;
-  }
-  if (!statusD2) { //Presskill
-    lcd.clear();
-    presskill();
-    statusD2 = digitalRead(DIPS2);
-    return;
-  }
-  if (!statusD3) { //Songs
-    lcd.clear();
-
-    while (!statusD3) {
       lcd.setCursor(5, 0);
-      lcd.print("Music");
-      lcd.setCursor(5, 1);
-      lcd.print("Player");
+      lcd.print("SIMON");
+      digitalWrite(LED_AZUL, HIGH);
+      digitalWrite(LED_AMARELO, HIGH);
+      digitalWrite(LED_VERDE, HIGH);
+      digitalWrite(LED_VERMELHO, HIGH);
+      delay(1000);
       apagaLeds();
-      furElise(); //B1
-      if (digitalRead(B2) == HIGH) { //silent night
-        lcd.clear();
-        lcd.print("Silent Night");
-        lcd.setCursor(0, 1);
-        lcd.print("Frank Sinatra");
-        silentNight();
-        lcd.clear();
-      }
-      if (digitalRead(B3) == HIGH) { //take on me
-        lcd.clear();
-        lcd.print("Take on me");
-        lcd.setCursor(0, 1);
-        lcd.print("A-HA");
-        takeOnMe();
-        lcd.clear();
-      }
-      if (digitalRead(B4) == HIGH) {  //The Godfather theme
-        lcd.clear();
-        lcd.print("The Godfather");
-        lcd.setCursor(0, 1);
-        lcd.print("Nino Rota");
-        theGodfather();
-        lcd.clear();
-      }
-      if (digitalRead(B5) == HIGH) {  //Jigglypuff's Song
-        lcd.clear();
-        lcd.print("JIGGLYPUFF SONG");
-        lcd.setCursor(0, 1);
-        lcd.print("Pokemon");
-        jigglypuff();
-        lcd.clear();
-      }
-      if (digitalRead(B6) == HIGH) {  //Brahms
-        lcd.clear();
-        lcd.print("Wiegenlied");
-        lcd.setCursor(0, 1);
-        lcd.print("Johannes Brahms");
-        brahms();
-        lcd.clear();
-      }
+      delay(500);
+      lcd.clear();
 
-      statusD3 = digitalRead(DIPS3);
+      while (!statusD1) {
+        lcd.clear();
+        simon();
+        statusD1 = digitalRead(DIPS1);
+      }
+      break;
     }
-    return;
-  }
-  if (!statusD4) { //DJ
-    lcd.clear();
-    lcd.setCursor(7, 0);
-    lcd.print("DJ");
-    apagaLeds();
+    if (!statusD2) { //Presskill
+      lcd.clear();
+      presskill();
+      statusD2 = digitalRead(DIPS2);
+      break;
+    }
+    if (!statusD3) { //Songs
+      lcd.clear();
 
-    while (!statusD4) {
-      if (digitalRead(B1) == HIGH) {
-        tone(BUZZER,392);  
-        digitalWrite(LED_AZUL, HIGH);  
-        delay(100);
-        noTone(BUZZER);
-        digitalWrite(LED_AZUL, LOW);
+      while (!statusD3) {
+        lcd.setCursor(5, 0);
+        lcd.print("Music");
+        lcd.setCursor(5, 1);
+        lcd.print("Player");
+        apagaLeds();
+        furElise(); //B1
+        if (digitalRead(B2) == HIGH) { //silent night
+          lcd.clear();
+          lcd.print("Silent Night");
+          lcd.setCursor(0, 1);
+          lcd.print("Frank Sinatra");
+          silentNight();
+          lcd.clear();
+        }
+        if (digitalRead(B3) == HIGH) { //take on me
+          lcd.clear();
+          lcd.print("Take on me");
+          lcd.setCursor(0, 1);
+          lcd.print("A-HA");
+          takeOnMe();
+          lcd.clear();
+        }
+        if (digitalRead(B4) == HIGH) {  //The Godfather theme
+          lcd.clear();
+          lcd.print("The Godfather");
+          lcd.setCursor(0, 1);
+          lcd.print("Nino Rota");
+          theGodfather();
+          lcd.clear();
+        }
+        if (digitalRead(B5) == HIGH) {  //Tetris's Theme Song
+          lcd.clear();
+          lcd.print("Tetris theme");
+          lcd.setCursor(0, 1);
+          lcd.print("Tetris");
+          tetris();
+          lcd.clear();
+        }
+        if (digitalRead(B6) == HIGH) {  //Brahms
+          lcd.clear();
+          lcd.print("Wiegenlied");
+          lcd.setCursor(0, 1);
+          lcd.print("Johannes Brahms");
+          brahms();
+          lcd.clear();
+        }
+        statusD3 = digitalRead(DIPS3);
       }
-      if (digitalRead(B2) == HIGH) {
-        tone(BUZZER,440);
-        digitalWrite(LED_AMARELO, HIGH); 
-        delay(100);
-        noTone(BUZZER);
-        digitalWrite(LED_AMARELO, LOW);
-      }
-      if (digitalRead(B3) == HIGH) {
-        tone(BUZZER,468);
-        digitalWrite(LED_VERDE, HIGH);  
-        delay(100);
-        noTone(BUZZER);
-        digitalWrite(LED_VERDE, LOW);
-      }
-      if (digitalRead(B4) == HIGH) {
-        tone(BUZZER,663);
-        digitalWrite(LED_VERMELHO, HIGH);   
-        delay(100);
-        noTone(BUZZER);
-        digitalWrite(LED_VERMELHO, LOW);
-      }
-      if (digitalRead(B5) == HIGH) {
-        tone(BUZZER,178);
-        digitalWrite(LED_AZUL, HIGH);
-        digitalWrite(LED_AMARELO, HIGH);
-        delay(100);
-        noTone(BUZZER);
-        digitalWrite(LED_AZUL, LOW);
-        digitalWrite(LED_AMARELO, LOW);
-      }
-      if (digitalRead(B6) == HIGH) {
-        tone(BUZZER,781);
-        digitalWrite(LED_VERDE, HIGH);
-        digitalWrite(LED_VERMELHO, HIGH);  
-        delay(100);
-        noTone(BUZZER);
-        digitalWrite(LED_VERDE, LOW);
-        digitalWrite(LED_VERMELHO, LOW);
-      }
+      break;
+    }
+    if (!statusD4) { //DJ
+      lcd.clear();
+      lcd.setCursor(7, 0);
+      lcd.print("DJ");
+      apagaLeds();
 
-      statusD4 = digitalRead(DIPS4);
+      while (!statusD4) {
+        if (digitalRead(B1) == HIGH) {
+          tone(BUZZER,392);  
+          digitalWrite(LED_AZUL, HIGH);  
+          delay(100);
+          noTone(BUZZER);
+          digitalWrite(LED_AZUL, LOW);
+        }
+        if (digitalRead(B2) == HIGH) {
+          tone(BUZZER,440);
+          digitalWrite(LED_AMARELO, HIGH); 
+          delay(100);
+          noTone(BUZZER);
+          digitalWrite(LED_AMARELO, LOW);
+        }
+        if (digitalRead(B3) == HIGH) {
+          tone(BUZZER,468);
+          digitalWrite(LED_VERDE, HIGH);  
+          delay(100);
+          noTone(BUZZER);
+          digitalWrite(LED_VERDE, LOW);
+        }
+        if (digitalRead(B4) == HIGH) {
+          tone(BUZZER,663);
+          digitalWrite(LED_VERMELHO, HIGH);   
+          delay(100);
+          noTone(BUZZER);
+          digitalWrite(LED_VERMELHO, LOW);
+        }
+        if (digitalRead(B5) == HIGH) {
+          tone(BUZZER,178);
+          digitalWrite(LED_AZUL, HIGH);
+          digitalWrite(LED_AMARELO, HIGH);
+          delay(100);
+          noTone(BUZZER);
+          digitalWrite(LED_AZUL, LOW);
+          digitalWrite(LED_AMARELO, LOW);
+        }
+        if (digitalRead(B6) == HIGH) {
+          tone(BUZZER,781);
+          digitalWrite(LED_VERDE, HIGH);
+          digitalWrite(LED_VERMELHO, HIGH);  
+          delay(100);
+          noTone(BUZZER);
+          digitalWrite(LED_VERDE, LOW);
+          digitalWrite(LED_VERMELHO, LOW);
+        }
+        statusD4 = digitalRead(DIPS4);
+      }
+      break;
     }
   }
 }
@@ -2225,7 +2063,8 @@ void loop() {
   lcd.print("1)SIMON  3)SONGS");
   lcd.setCursor(0, 1);
   lcd.print("2)PRESSKILL 4)DJ");
-  tetrisMenu();
+
+  verificaModo(); //Verifica o dip switch e inicia modo escolhido
 
   // ACENDE|APAGA OS LEDS - LOW:apaga, HIGH:acende
 }
