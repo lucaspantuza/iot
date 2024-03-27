@@ -1,4 +1,30 @@
-//TESTE GUESS THE NUMBER
+/*
+  Blink
+
+  Turns an LED on for one second, then off for one second, repeatedly.
+
+  Most Arduinos have an on-board LED you can control. On the UNO, MEGA and ZERO
+  it is attached to digital pin 13, on MKR1000 on pin 6. LED_BUILTIN is set to
+  the correct LED pin independent of which board is used.
+  If you want to know what pin the on-board LED is connected to on your Arduino
+  model, check the Technical Specs of your board at:
+  https://www.arduino.cc/en/Main/Products
+
+  modified 8 May 2014
+  by Scott Fitzgerald
+  modified 2 Sep 2016
+  by Arturo Guadalupi
+  modified 8 Sep 2016
+  by Colby Newman
+
+  This example code is in the public domain.
+
+  https://www.arduino.cc/en/Tutorial/BuiltInExamples/Blink
+*/
+
+
+// selecionar a placa "ESP32 Dev Module"
+
 
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
@@ -6,11 +32,33 @@
 #define B1 14   //aumenta
 #define B2 27   //diminui
 #define B3 26   //start
-#define B4 25   //reinicia
+#define B4 25   //exit
 #define B5 33   //indefinido
 #define B6 32   //indefinido
 
 LiquidCrystal_I2C lcd(0x27, 16, 2);  // set the LCD address to 0x3F for a 20 chars and 4 line display
+
+byte setaCima[] = {   //cria um caractere com uma seta para cima
+  B00100,
+  B01110,
+  B11111,
+  B00100,
+  B00100,
+  B00100,
+  B00100,
+  B00100
+};
+
+byte setaBaixo[] = {  //cria um caractere com uma seta para baixo
+  B00100,
+  B00100,
+  B00100,
+  B00100,
+  B00100,
+  B11111,
+  B01110,
+  B00100
+};
 
 int statusB1 = 0;
 int statusB2 = 0;
@@ -22,22 +70,22 @@ int statusB6 = 0;
 int numSecreto = 0;
 int numUsuario = 0;
 int resultado = 0;
-int tentativas = 0;
+int vidas = 5;
 int statusJogo = 0;
 
-String strTentativas = "";
+String strVidas = "";
 
 
-void converte () { //converte tentativas em string para printar no lcd
-  strTentativas = String(tentativas);
+void converte () { //converte as vidas do usuário em string para printar no lcd
+  strVidas = String(vidas);
 }
 
 void numAleatorio () {  //gera um número aleatório
-  numSecreto = random(100);
+  numSecreto = random(10);
 }
 
 void verificaResposta () {  //verifica a resposta do usuário
-  tentativas += 1;
+  vidas -= 1;
 
   if (numSecreto == numUsuario) {
     resultado = 1;
@@ -48,12 +96,19 @@ void verificaResposta () {  //verifica a resposta do usuário
   if (numSecreto > numUsuario) {
     resultado = 3;
   }
-  if (tentativas >= 5) {
+  if (vidas <= 0) {
     resultado = 4;
   }
 }
 
 void reiniciaJogo () {  //função para reinciar o jogo
+  numSecreto = 0;
+  numUsuario = 0;
+  vidas = 5;
+  resultado = 0;
+}
+
+void fechaJogo () {   //função que chama função exit(0);
   exit(0);
 }
 
@@ -62,14 +117,15 @@ void ganhaJogo () { //função para quando ganhar o jogo
   lcd.setCursor(4, 0);
   lcd.print("Acertou!");
   delay(3000);
+  lcd.setCursor(0, 0);
+  lcd.print("PRESSIONE ");
+  lcd.write(0);
+  lcd.print(" ou ");
+  lcd.write(1);
+  lcd.setCursor(1, 1);
+  lcd.print("PARA REINICIAR");
 
   reiniciaJogo();
-
-  numSecreto = 0;
-  numUsuario = 0;
-  tentativas = 0;
-  resultado = 0;
-  statusJogo = 1;
 }
 
 void numMaior () {  //quando a tentativa do usuario for mais alta que o valor certo
@@ -93,26 +149,27 @@ void perdeJogo () { //função para quando ganhar o jogo
   lcd.setCursor(4, 0);
   lcd.print("Perdeu!");
   delay(3000);
+  lcd.setCursor(0, 0);
+  lcd.print("PRESSIONE ");
+  lcd.write(0);
+  lcd.print(" ou ");
+  lcd.write(1);
+  lcd.setCursor(1, 1);
+  lcd.print("PARA REINICIAR");
 
   reiniciaJogo();
-
-  numSecreto = 0;
-  numUsuario = 0;
-  tentativas = 0;
-  resultado = 0;
-  statusJogo = 1;
 }
 
 void verificaBotao () { //verifica se algum botão foi pressionado
   if (digitalRead(B1) == HIGH) {
     numUsuario += 1;
-    if (numUsuario > 99) {
+    if (numUsuario > 10) {
       numUsuario = 0;
     }
     converte();
     lcd.clear();
     lcd.setCursor(0, 0);
-    lcd.print("Tentativas: " + strTentativas);
+    lcd.print("Vidas: " + strVidas);
     lcd.setCursor(7, 1);
     lcd.print(numUsuario);
     delay(100);
@@ -121,12 +178,12 @@ void verificaBotao () { //verifica se algum botão foi pressionado
   if (digitalRead(B2) == HIGH) {
     numUsuario -= 1;
     if (numUsuario < 0) {
-      numUsuario = 99;
+      numUsuario = 10;
     }
     converte();
     lcd.clear();
     lcd.setCursor(0, 0);
-    lcd.print("Tentativas: " + strTentativas);
+    lcd.print("Vidas: " + strVidas);
     lcd.setCursor(7, 1);
     lcd.print(numUsuario);
     delay(100);
@@ -150,13 +207,13 @@ void verificaBotao () { //verifica se algum botão foi pressionado
   }
 
   if (digitalRead(B4) == HIGH) {
-    reiniciaJogo();
+    fechaJogo();
   }
 }
 
 void jogo () {
   numAleatorio();
-  while (statusJogo == 0) {
+  while (true) {
     verificaBotao();
   }
 }
@@ -167,6 +224,9 @@ void setup() {
   // CONFIGURACAO INICIAL DO LCD ***********************
   lcd.init();  // initialize the lcd
   lcd.backlight();
+  lcd.createChar(0, setaCima);
+  lcd.createChar(1, setaBaixo);
+
   // lcd.setCursor(COLUNA, LINHA);
   lcd.setCursor(5, 0);
   lcd.print("CEFET");
@@ -180,7 +240,7 @@ void setup() {
   lcd.clear();
   converte();
   lcd.setCursor(0, 0);
-  lcd.print("Tentativas: " + strTentativas);
+  lcd.print("Vidas: " + strVidas);
   lcd.setCursor(7, 1);
   lcd.print(numUsuario);
 
