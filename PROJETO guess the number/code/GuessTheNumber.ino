@@ -60,6 +60,18 @@ byte setaBaixo[] = {  //cria um caractere com uma seta para baixo
   B00100
 };
 
+byte coracao[] = {
+  B00000,
+  B01010,
+  B11111,
+  B11111,
+  B11111,
+  B01110,
+  B00100,
+  B00000
+};
+
+
 int statusB1 = 0;
 int statusB2 = 0;
 int statusB3 = 0;
@@ -170,6 +182,9 @@ void verificaBotao () { //verifica se algum botão foi pressionado
     lcd.clear();
     lcd.setCursor(0, 0);
     lcd.print("Vidas: " + strVidas);
+    /*for (i=1, i<=vidas, i++) {
+      lcd.write(♡)
+    }*/ //testar
     lcd.setCursor(7, 1);
     lcd.print(numUsuario);
     delay(100);
@@ -226,6 +241,7 @@ void setup() {
   lcd.backlight();
   lcd.createChar(0, setaCima);
   lcd.createChar(1, setaBaixo);
+  lcd.createChar(2, coracao);
 
   // lcd.setCursor(COLUNA, LINHA);
   lcd.setCursor(5, 0);
