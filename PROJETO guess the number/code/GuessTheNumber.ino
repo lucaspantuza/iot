@@ -96,6 +96,14 @@ void numAleatorio () {  //gera um número aleatório
   numSecreto = random(10);
 }
 
+void debounceStart () {  //impede que haja leituras erradas do botão start
+  delay(500);
+}
+
+void debounceSeta () {  //impede que haja leituras erradas das setas
+  delay(100);
+}
+
 void verificaResposta () {  //verifica a resposta do usuário
   vidas -= 1;
 
@@ -181,13 +189,12 @@ void verificaBotao () { //verifica se algum botão foi pressionado
     converte();
     lcd.clear();
     lcd.setCursor(0, 0);
-    lcd.print("Vidas: " + strVidas);
-    /*for (i=1, i<=vidas, i++) {
-      lcd.write(♡)
-    }*/ //testar
+    for (int i = 1; i <= vidas; i++) {
+      lcd.write(2);
+    }
     lcd.setCursor(7, 1);
     lcd.print(numUsuario);
-    delay(100);
+    debounceSeta();
   }
 
   if (digitalRead(B2) == HIGH) {
@@ -198,10 +205,12 @@ void verificaBotao () { //verifica se algum botão foi pressionado
     converte();
     lcd.clear();
     lcd.setCursor(0, 0);
-    lcd.print("Vidas: " + strVidas);
+    for (int i = 1; i <= vidas; i++) {
+      lcd.write(2);
+    }
     lcd.setCursor(7, 1);
     lcd.print(numUsuario);
-    delay(100);
+    debounceSeta();
   }
 
   if (digitalRead(B3) == HIGH) {
@@ -218,7 +227,7 @@ void verificaBotao () { //verifica se algum botão foi pressionado
     if (resultado == 4) {
       perdeJogo();
     }
-    delay(500);
+    debounceStart();
   }
 
   if (digitalRead(B4) == HIGH) {
@@ -256,7 +265,10 @@ void setup() {
   lcd.clear();
   converte();
   lcd.setCursor(0, 0);
-  lcd.print("Vidas: " + strVidas);
+  //lcd.print("Vidas: " + strVidas);
+  for (int i = 1; i <= vidas; i++) {
+    lcd.write(2);
+  }
   lcd.setCursor(7, 1);
   lcd.print(numUsuario);
 
