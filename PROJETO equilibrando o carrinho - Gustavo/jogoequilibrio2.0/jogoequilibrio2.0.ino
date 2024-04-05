@@ -10,7 +10,7 @@ unsigned long millisTempoled = millis();
 int BUZZER = 9;
 int led = 7;
 
-//link baixar biblioteca lcd: https://robojax.com/learn/arduino/?vid=robojax-LCD2004-I2C
+//link baixar biblioteca lcd:  https://robojax.com/learn/arduino/?vid=robojax-LCD2004-I2C
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
  
