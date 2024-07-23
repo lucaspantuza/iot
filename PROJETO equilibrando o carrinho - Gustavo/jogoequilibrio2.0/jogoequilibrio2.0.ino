@@ -216,13 +216,18 @@ void modoFase () { //roda o modo de jogo baseado em fases (provavelmente vai dar
   }
 }
 
+unsigned long intervaloPiscar = 500;  // Intervalo desejado para piscar o LED em milissegundos
+unsigned long ultimaTrocaEstado = 0;  // Armazena o tempo da última troca de estado do LED
+bool modoFoiSelecionado = false; // Controla se o jogo está ativo
 void modoHighscore () { //roda o modo de jogo baseado em durar mais tempo
-  microservo.write(map(analogRead(A0), 0, 1023, 40, 140));
+
+  
+  microservo.write(map(analogRead(A0), 0, 1023, 40, 140)); //move o servo motor com base na leitura do pino A0
  
   Serial.println(sensorluz);
-  sensorluz = analogRead(A2);
-
-  cronometro();
+  sensorluz = analogRead(A2); //lê o valor do sensor de luz que encontra no pino A2
+  
+  cronometro(); //chama o cronômetro para marcar o tempo;
   
   //criar função verificaSensor();
   if (sensorluz < 300 && ((millis() - millisTempoled) < 4000)) { 
@@ -232,15 +237,21 @@ void modoHighscore () { //roda o modo de jogo baseado em durar mais tempo
     //   digitalWrite(led, LOW);
     //   delay(200);
     // } while (((millis() - millisTempoled) < 4000) && (sensorluz > 300));
+
+    if (millis() - ultimaTrocaEstado >= intervaloPiscar) {
+      digitalWrite(7, !digitalRead(7));  // Inverte o estado do LED
+      ultimaTrocaEstado = millis();      // Atualiza o tempo da última troca de estado
+    }
+
   }
-  if (sensorluz < 300 && ((millis() - millisTempoled) > 4000)) { 
-    carroequilibrado = true;
-    digitalWrite(7, HIGH);
-  }
+  if (sensorluz < 300 && ((millis() - millisTempoled) > 4000)) { // se a intesidade de luz no sensor for menor que 300 e o tempo for maior que 4 segundos
+    carroequilibrado = true; //armazena que o carro foi equilibrado
+    digitalWrite(7, HIGH); //liga o led
+  } 
   else {
-    if (sensorluz > 300) {
-      digitalWrite(7, LOW); 
-      millisTempoled = millis(); 
+    if (sensorluz > 300) { //se o sensor de luz tiver com intesidade acima de 300 
+      digitalWrite(7, LOW);  // led permanece desligado;
+      millisTempoled = millis();  //millistempoled recebe o atual;
     }
   }
 }
@@ -273,27 +284,64 @@ void modoHighscoreCronNoFim () { //roda o modo de jogo baseado em durar mais tem
 }
 
 int ultimaGravacaoCronometro = 0;
+bool lcdInicialLimpo = false; //Variavel para ver se o lcd ja foi limpo;
 void cronometro () {  //faz a contagem do tempo e printa no lcd
 
-  //antes de mostrar na tela, verifica se a ultima vez que mandou gravar na tela passou pelo menos 1 segundo
-  if(millis() - ultimaGravacaoCronometro < 1000) return;
+  // //antes de mostrar na tela, verifica se a ultima vez que mandou gravar na tela passou pelo menos 1 segundo
+  // if(millis() - ultimaGravacaoCronometro < 1000) return;
+  // ultimaGravacaoCronometro = millis();
+  
+  // timer = millis();
+  // unsigned long tempo = timer / 1000;
+  // unsigned long minutos = int(tempo / 60);
+  // unsigned long segundos = (tempo % 60);
+
+  // lcd.clear();
+  // lcd.print("tempo");
+  // lcd.setCursor(0, 1); //colocar posição correta
+  // lcd.print(minutos);
+  // lcd.print(":");
+  // if(segundos < 10){
+  //   lcd.print("0");
+  // }
+  // lcd.print(segundos);
+  // //delay(1000);
+
+
+  if( !lcdInicialLimpo ) { //se o lcd não tiver sido limpo, vai limpar
+    lcd.clear();
+    lcdInicialLimpo = true;
+  }
+
+  lcd.setCursor(0, 0);
+  lcd.print("Tempo");
+
+ // Verifica se já passou 1 segundo desde a última atualização
+  if (millis() - ultimaGravacaoCronometro < 1000) return;
   ultimaGravacaoCronometro = millis();
   
-  timer = millis();
-  unsigned long tempo = timer / 1000;
-  unsigned long minutos = int(tempo / 60);
-  unsigned long segundos = (tempo % 60);
+  unsigned long tempo = millis() / 1000;
+  unsigned long minutos = tempo / 60;
+  unsigned long segundos = tempo % 60;
 
-  lcd.clear();
-  lcd.print("tempo");
-  lcd.setCursor(0, 1); //colocar posição correta
+  // Posiciona o cursor e imprime os minutos e segundos
+  
+  lcd.setCursor(0, 1); 
+  if (minutos < 10) { //formata para exibir zeros a esquerda caso o numero seja menor que 10
+    lcd.print("0");
+  }
   lcd.print(minutos);
   lcd.print(":");
-  if(segundos < 10){
+  if (segundos < 10) { //formata para exibir zeros a esquerda
     lcd.print("0");
   }
   lcd.print(segundos);
-  //delay(1000);
+
+}
+
+void zerarCronometro() {
+  timer = 0; // Inicializa o cronômetro
+  ultimaGravacaoCronometro = 0; // Inicializa o tempo da última gravação
 }
 
 int ultimaGravacaoTelaLinha1 = 0; 
@@ -319,10 +367,19 @@ void selecaoModos () {
     //lcd.clear();
     //lcd.home();
     //lcd.print("Highscore");
-    escreve("highscore");
-
-    //modoHighscore();
-    modoHighscoreCronNoFim();
+    do {
+      // if( !modoFoiSelecionado ){
+      //   zerarCronometro();
+      //   modoFoiSelecionado = true;
+      // }else {
+        modoHighscore();
+      // }
+    }while(!carroequilibrado);
+    
+    escreve("Ganhou!!");
+    takeOnMe();
+    
+    
   }
   if (!statusD2) {
     //lcd.clear();
@@ -335,8 +392,12 @@ void selecaoModos () {
     //lcd.clear();
     //lcd.home();
     //lcd.print("Fases");
-    
-    modoHighscore();
+
+    escreve("highscore");
+
+    //modoHighscore();
+    modoHighscoreCronNoFim();
+
   }
 
   // if(digitalRead(switch3) == LOW){
