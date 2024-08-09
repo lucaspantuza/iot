@@ -221,6 +221,8 @@ unsigned long ultimaTrocaEstado = 0;  // Armazena o tempo da última troca de es
 bool modoFoiSelecionado = false; // Controla se o jogo está ativo
 void modoHighscore () { //roda o modo de jogo baseado em durar mais tempo
 
+  do{
+
   
   microservo.write(map(analogRead(A0), 0, 1023, 40, 140)); //move o servo motor com base na leitura do pino A0
  
@@ -254,12 +256,13 @@ void modoHighscore () { //roda o modo de jogo baseado em durar mais tempo
       millisTempoled = millis();  //millistempoled recebe o atual;
     }
   }
+  }while(!carroequilibrado);
 }
 
 void modoHighscoreCronNoFim () { //roda o modo de jogo baseado em durar mais tempo(cronometro so aparece no fim)
   microservo.write(map(analogRead(A0), 0, 1023, 40, 140));
  
-  Serial.println(sensorluz);
+  Serial.println(sensorluz);  
   sensorluz = analogRead(A2);
   
   //criar função verificaSensor();
@@ -367,15 +370,12 @@ void selecaoModos () {
     //lcd.clear();
     //lcd.home();
     //lcd.print("Highscore");
-    do {
+
       // if( !modoFoiSelecionado ){
       //   zerarCronometro();
       //   modoFoiSelecionado = true;
       // }else {
-        modoHighscore();
-      // }
-    }while(!carroequilibrado);
-    
+    modoHighscore();
     escreve("Ganhou!!");
     takeOnMe();
     
