@@ -30,3 +30,5 @@
 *.exe
 *.out
 *.app
+/PROJETO META alimentador - Arthur_Joao_Adryan TEC/code_controle_remoto/almoxarifado/code_teste_comunicacao/code_a/*.ini
+*.ini
