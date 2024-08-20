@@ -292,7 +292,7 @@ void converte () { //converte as vidas do usuário em string para printar no lcd
 }
 
 void numAleatorio () {  //gera um número aleatório
-  numSecreto = random(101);
+  numSecreto = random(11);
 }
 
 void debounceStart () {  //impede que haja leituras erradas do botão start
