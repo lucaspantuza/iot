@@ -4,16 +4,27 @@
 
 #include <Servo.h>
 
-Servo microservo;
-unsigned long millisTempoled = millis();
+Servo microservo; //Objeto para controlar o servo motor
 
+//Variáveis de controle do tempo e estado do LED
+
+unsigned long millisTempoled = millis(); // Armazena o tempo atual em milissegundos desde o início do programa
+unsigned long intervaloPiscar = 500;  // Intervalo desejado para piscar o LED em milissegundos
+unsigned long ultimaTrocaEstado = 0;  // Armazena o tempo da última troca de estado do LED
+bool modoFoiSelecionado = false; // Controla se o jogo está ativo
+boolean carroequilibrado = false; //inicia estado como não equilibrado
+unsigned long timer = 0; // Armazena o tempo decorrido para controle de cronômetro e temporizadores.
+unsigned long tempoLimite = 60000; // Define o limite de tempo (60 segundos) para alguma função ou evento.
+int enderecoRecordeCronometro = 0; 
+int recordeCronometro = 0; 
+
+//Definição dos pinos e variáveis de controle 
 int BUZZER = 9;
 int led = 7;
 
 //link baixar biblioteca lcd:  https://robojax.com/learn/arduino/?vid=robojax-LCD2004-I2C
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
- 
 int distancia = 0;
 int sensorluz = 0;
 int switch1 = 10;
@@ -26,17 +37,12 @@ int statusD2 = 0;
 int statusD3 = 0;
 int statusD4 = 0;
 
-unsigned long timer = 0;
-
-unsigned long tempoLimite = 60000;
 
 
-int enderecoRecordeCronometro = 0;
-int recordeCronometro = 0;
-boolean carroequilibrado = false;
 
 
 void takeOnMe () {  //toca Take On Me (A-HA)
+  /*
   #define NOTE_B0  31
   #define NOTE_C1  33
   #define NOTE_CS1 35
@@ -170,6 +176,7 @@ void takeOnMe () {  //toca Take On Me (A-HA)
     delay(noteDuration);
 
     noTone(BUZZER);
+    */
   }
 }
 
@@ -183,10 +190,6 @@ void atualizaTimer () { //atualiza o valor da variável 'timer'
 }
 
 
-
-unsigned long intervaloPiscar = 500;  // Intervalo desejado para piscar o LED em milissegundos
-unsigned long ultimaTrocaEstado = 0;  // Armazena o tempo da última troca de estado do LED
-bool modoFoiSelecionado = false; // Controla se o jogo está ativo
 void modoHighscore () { //roda o modo de jogo baseado em durar mais tempo
 
   microservo.write(getPosicaoAleatoria());
@@ -200,32 +203,30 @@ void modoHighscore () { //roda o modo de jogo baseado em durar mais tempo
   
   cronometro(); //chama o cronômetro para marcar o tempo;
   
-  //criar função verificaSensor();
+  
+  //Pisca o LED enquanto o sensor de luz estiver abaixo de 300 e o tempo for menor que 4 segundos
   if (sensorluz < 300 && ((millis() - millisTempoled) < 4000)) { 
-    // do {
-    //   digitalWrite(led, HIGH);
-    //   // delay(200);
-    //   digitalWrite(led, LOW);
-    //   delay(200);
-    // } while (((millis() - millisTempoled) < 4000) && (sensorluz > 300));
-
-    if (millis() - ultimaTrocaEstado >= intervaloPiscar) {
+    if (millis() - ultimaTrocaEstado >= intervaloPiscar) { // Verifica se o tempo decorrido desde a última troca de estado do LED é maior ou igual ao intervalo definido para piscar o LED.
       digitalWrite(7, !digitalRead(7));  // Inverte o estado do LED
       ultimaTrocaEstado = millis();      // Atualiza o tempo da última troca de estado
     }
 
   }
-  if (sensorluz < 300 && ((millis() - millisTempoled) > 4000)) { // se a intesidade de luz no sensor for menor que 300 e o tempo for maior que 4 segundos
+
+  // Se o sensor de luz estiver abaixo de 300 e o tempo for maior que 4 segundos, o carro está equilibrado
+  if (sensorluz < 300 && ((millis() - millisTempoled) > 4000)) {
     carroequilibrado = true; //armazena que o carro foi equilibrado
     digitalWrite(7, HIGH); //liga o led
   } 
   else {
+    // Se o sensor de luz estiver acima de 300, desliga o LED e atualiza o tempo
     if (sensorluz > 300) { //se o sensor de luz tiver com intesidade acima de 300 
       digitalWrite(7, LOW);  // led permanece desligado;
       millisTempoled = millis();  //millistempoled recebe o atual;
     }
   }
-  }while(!carroequilibrado);
+
+  }while(!carroequilibrado); //Repete a função enquanto carro não esta equilibrado
 }
 
 
@@ -243,27 +244,6 @@ int ultimaGravacaoCronometro = 0;
 bool lcdInicialLimpo = false; //Variavel para ver se o lcd ja foi limpo;
 void cronometro () {  //faz a contagem do tempo e printa no lcd
 
-  // //antes de mostrar na tela, verifica se a ultima vez que mandou gravar na tela passou pelo menos 1 segundo
-  // if(millis() - ultimaGravacaoCronometro < 1000) return;
-  // ultimaGravacaoCronometro = millis();
-  
-  // timer = millis();
-  // unsigned long tempo = timer / 1000;
-  // unsigned long minutos = int(tempo / 60);
-  // unsigned long segundos = (tempo % 60);
-
-  // lcd.clear();
-  // lcd.print("tempo");
-  // lcd.setCursor(0, 1); //colocar posição correta
-  // lcd.print(minutos);
-  // lcd.print(":");
-  // if(segundos < 10){
-  //   lcd.print("0");
-  // }
-  // lcd.print(segundos);
-  // //delay(1000);
-
-
   if( !lcdInicialLimpo ) { //se o lcd não tiver sido limpo, vai limpar
     lcd.clear();
     lcdInicialLimpo = true;
@@ -272,16 +252,18 @@ void cronometro () {  //faz a contagem do tempo e printa no lcd
   lcd.setCursor(0, 0);
   lcd.print("Tempo");
 
- // Verifica se já passou 1 segundo desde a última atualização
+ // Antes de mostrar na tela, verifica se a ultima vez que mandou gravar na tela passou pelo menos 1 segundo
   if (millis() - ultimaGravacaoCronometro < 1000) return;
   ultimaGravacaoCronometro = millis();
   
+  //timer = millis();
+  // unsigned long tempo = timer / 1000;
   unsigned long tempo = millis() / 1000;
   unsigned long minutos = tempo / 60;
   unsigned long segundos = tempo % 60;
 
-  // Posiciona o cursor e imprime os minutos e segundos
   
+  // Posiciona o cursor e imprime os minutos e segundos
   lcd.setCursor(0, 1); 
   if (minutos < 10) { //formata para exibir zeros a esquerda caso o numero seja menor que 10
     lcd.print("0");
@@ -297,13 +279,13 @@ void cronometro () {  //faz a contagem do tempo e printa no lcd
 
 void zerarCronometro() {  // não funcionou!!
   timer = 0; // Inicializa o cronômetro
-  ultimaGravacaoCronometro = 0; // Inicializa o tempo da última gravação
+  ultimaGravacaoCronometro = millis(); // Inicializa o tempo da última gravação
 }
 
 int ultimaGravacaoTelaLinha1 = 0; 
 void escreve(const char * texto){
   
-    //antes de mostrar na tela, verifica se a ultima vez que mandou gravar na tela passou pelo menos 1 segundo
+    //Antes de mostrar na tela, verifica se a ultima vez que mandou gravar na tela passou pelo menos 1 segundo
     if(millis() - ultimaGravacaoTelaLinha1 < 1000) return;
     ultimaGravacaoTelaLinha1 = millis();
 
