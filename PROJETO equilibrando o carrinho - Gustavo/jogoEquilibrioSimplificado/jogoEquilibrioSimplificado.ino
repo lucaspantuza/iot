@@ -189,6 +189,7 @@ unsigned long ultimaTrocaEstado = 0;  // Armazena o tempo da última troca de es
 bool modoFoiSelecionado = false; // Controla se o jogo está ativo
 void modoHighscore () { //roda o modo de jogo baseado em durar mais tempo
 
+  microservo.write(getPosicaoAleatoria());
   do{
 
   
@@ -227,6 +228,16 @@ void modoHighscore () { //roda o modo de jogo baseado em durar mais tempo
   }while(!carroequilibrado);
 }
 
+
+int tempoInicio;
+
+void salvaTempoInicio () {
+  tempoInicio = millis();
+}
+
+int getPosicaoAleatoria () {
+    return random(40, 140);
+}
 
 int ultimaGravacaoCronometro = 0;
 bool lcdInicialLimpo = false; //Variavel para ver se o lcd ja foi limpo;
@@ -311,7 +322,7 @@ void selecaoModos () {
   if (!statusD1) {
     modoHighscore();
     escreve("Ganhou!!");
-    takeOnMe();
+    //takeOnMe();
     
     
   }
