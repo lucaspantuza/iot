@@ -3,6 +3,7 @@
 #include <Adafruit_SSD1306.h>
 #include <ESP32Servo.h> 
 
+
 #define POTENTIOMETER_PIN   15
 #define BUZZER_PIN          25
 #define LED_PIN             33
@@ -11,11 +12,15 @@
 #define CHAVE1_PIN          12
 #define CHAVE2_PIN          14
 
+
+
 Servo myservo;
 Adafruit_SSD1306 display = Adafruit_SSD1306(); //OBJETO DO TIPO Adafruit_SSD1306
 int analogValuePotenciometro, analogValueLdr;
 
 void setup(){
+  
+
   Wire.begin(); //INICIALIZA A BIBLIOTECA WIRE
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C); //INICIALIZA O DISPLAY COM ENDEREÇO I2C 0x3C
   display.setTextColor(WHITE); //DEFINE A COR DO TEXTO
