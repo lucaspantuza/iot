@@ -11,15 +11,15 @@ Adafruit_SSD1306 display = Adafruit_SSD1306();  //OBJETO DO TIPO Adafruit_SSD130
 
 
 //Variáveis de controle do tempo e estado do LED
-int ultimaGravacaoCronometro = 0;         // Ultima graavacao do cronometro
+int ultimaGravacaoCronometro = 0;         // Ultima gravacao do cronometro
 unsigned long millisTempoled = millis();  // Armazena o tempo atual em milissegundos desde o início do programa
 unsigned long intervaloPiscar = 500;      // Intervalo desejado para piscar o LED em milissegundos
 unsigned long ultimaTrocaEstado = 0;      // Armazena o tempo da última troca de estado do LED
-bool modoFoiSelecionado = false;          // Controla se o jogo está ativo
 boolean carroequilibrado = false;         //inicia estado como não equilibrado
 unsigned long timer = 0;                  // Armazena o tempo decorrido para controle de cronômetro e temporizadores.
-unsigned long tempoLimite = 60000;        // Define o limite de tempo (60 segundos) para alguma função ou evento.
-int startCronometro;
+int startCronometro;                      //Define a variavel para controle de zerar o cronometro
+int sensorluz = 0;                        //Define a variavel sensor luz para controlar a luminosidade recebida
+long tempo = 0;                           //Armazena o tempo decorrido para controle de cronômetro e temporizadores.
 
 // Endereço na EEPROM onde o recorde será armazenado
 int enderecoRecorde = 0;
@@ -35,9 +35,6 @@ int recorde = 0;
 #define CHAVE2_PIN 14
 
 
-int distancia = 0;
-int sensorluz = 0;
-long tempo = 0;
 
 
 void acendeLed() {
@@ -316,7 +313,8 @@ void jogo() {  //roda o modo de jogo baseado em durar mais tempo
     }
 
 
-  } while (carroequilibrado == false && digitalRead(CHAVE1_PIN) == LOW);  //Repete a função enquanto carro não esta equilibrado
+  } while (carroequilibrado == false && digitalRead(CHAVE1_PIN) == LOW);  //Repete a função enquanto carro não esta equilibrado e o pino 1 encontra ativo
+  
   display.setCursor(5,10);
   escreve("Reinicie...");
   display.display();
@@ -426,19 +424,23 @@ void selecaoModos() {
     display.display();  
 
   } else{
-    carroequilibrado = false;
-    cronometroZerado = false;
-    display.clearDisplay();
-    display.setCursor(5, 10);
-    display.print("<---");
-    display.setCursor(95, 10);
-    display.print("--->");
-    display.setCursor(15,20);
-    display.print("Selecione o modo");
+    carroequilibrado = false; //Força o jogo ter o status false para carrinhoequilibrado
+    cronometroZerado = false;  //Força o jogo ter o status false para cronometroZerado
+    display.clearDisplay();  //Limpa o display
+    display.setCursor(7, 2); //Posiciona em x = 7 e y = 2
+    display.print("Jogo"); //Imprime a String Jogo
+    display.setCursor(5, 10); ///Posiciona em 5, 10
+    display.print("<---");  //Imprime seta esquerda
+    display.setCursor(85, 2); //Posiciona em 85, 2
+    display.print("Score"); //Imprime a String Score
+    display.setCursor(95, 10); //Posiciona em 95, 10
+    display.print("--->");  //Imprime seta direita
+    display.setCursor(15,20);  //Posiciona em 15, 20
+    display.print("Selecione o modo"); // Imprime a String "Selecione o modo"
   }
 
 
-  display.display();
+  display.display();  //inicializa as impressões de fato na tela
 }
 
 void setup() {
@@ -451,22 +453,16 @@ void setup() {
   recorde = EEPROM.read(enderecoRecorde);
 
 
-  // pinMode(A0, INPUT);
   microservo.attach(SERVO_PIN, 500, 2400);
 
   Serial.begin(9600);
-  //pinMode(A2, INPUT);
-  //pinMode(7, OUTPUT);
+ 
 
   // Botões:
 
   pinMode(CHAVE1_PIN, INPUT_PULLUP);
   pinMode(CHAVE2_PIN, INPUT_PULLUP);
 
-  // pinMode(switch1, INPUT_PULLUP);
-  // pinMode(switch2, INPUT_PULLUP);
-  // pinMode(switch3, INPUT_PULLUP);
-  // pinMode(switch4, INPUT_PULLUP);
 
   //Buzzer:
   pinMode(BUZZER_PIN, OUTPUT);
@@ -477,11 +473,6 @@ void setup() {
   display.setTextColor(WHITE);                //DEFINE A COR DO TEXTO
   display.setTextSize(1);                     //DEFINE O TAMANHO DA FONTE DO TEXTO
   display.clearDisplay();                     //LIMPA AS INFORMAÇÕES DO DISPLAY
-
-  // lcd.begin();   // INICIALIZA O DISPLAY LCD
-  // lcd.clear();
-  // lcd.backlight();
-  // lcd.clear();
 
 
   //Mensagem inicial no LCD:
