@@ -19,6 +19,7 @@ bool modoFoiSelecionado = false;          // Controla se o jogo está ativo
 boolean carroequilibrado = false;         //inicia estado como não equilibrado
 unsigned long timer = 0;                  // Armazena o tempo decorrido para controle de cronômetro e temporizadores.
 unsigned long tempoLimite = 60000;        // Define o limite de tempo (60 segundos) para alguma função ou evento.
+int startCronometro;
 
 // Endereço na EEPROM onde o recorde será armazenado
 int enderecoRecorde = 0;
@@ -48,7 +49,7 @@ void apagaLed() {
 }
 
 void salvaRecorde() {
-  if ((millis() - ultimaGravacaoCronometro) > recorde) {
+  if ((millis() - startCronometro) > recorde) {
     display.clearDisplay();
     display.setCursor(5, 5);          // Define o cursor na posição (0, 0)
     display.print("Novo Recorde:   ");  // Imprime um texto fixo
@@ -254,13 +255,12 @@ void ganhaJogo() {
   display.setCursor(30, 10);
   display.print("Voce ganhou!!!");
   display.display();
-
-
-  //takeOnMe();
-
+  // takeOnMe();
   delay(1000);
-
   salvaRecorde();
+  delay(1000);
+  display.clearDisplay();
+  
 }
 
 
@@ -276,14 +276,13 @@ void atualizaTimer() {  //atualiza o valor da variável 'timer'
 void jogo() {  //roda o modo de jogo baseado em durar mais tempo
   
   do {
-    int potenciometroValor = map(analogRead(POTENTIOMETER_PIN), 0, 2500, 0, 40); //2600
-    
-
+    int potenciometroValor = map(analogRead(POTENTIOMETER_PIN), 2500, 0, 0, 68); //2500
+  
     microservo.write(potenciometroValor);  //move o servo motor com base na leitura do pino A0 
-    //Serial.print("Potenciometro:");
-    //Serial.println(potenciometroValor);
-    //Serial.println("Max:5000");
-    //Serial.println("Min:0");
+    // Serial.print("Potenciometro:");
+    // Serial.println(potenciometroValor);
+    // Serial.println("Max:70");
+    // Serial.println("Min:-44");
     
     //Serial.println(sensorluz);
 
@@ -317,8 +316,12 @@ void jogo() {  //roda o modo de jogo baseado em durar mais tempo
     }
 
 
-  } while (!carroequilibrado);  //Repete a função enquanto carro não esta equilibrado
+  } while (carroequilibrado == false && digitalRead(CHAVE1_PIN) == LOW);  //Repete a função enquanto carro não esta equilibrado
+  display.setCursor(5,10);
+  escreve("Reinicie...");
+  display.display();
 
+  
 }
 
 
@@ -330,7 +333,7 @@ void salvaTempoInicio() {
 
 
 
-int startCronometro;
+
 bool cronometroZerado = false;
 bool displayInicialLimpo = false;  //Variavel para ver se o lcd ja foi limpo;
 void cronometro() {                //faz a contagem do tempo e printa no lcd
@@ -341,7 +344,9 @@ void cronometro() {                //faz a contagem do tempo e printa no lcd
   }
 
   if(!cronometroZerado){
-    startCronometro = millis() - ultimaGravacaoCronometro;
+    // startCronometro = millis() - ultimaGravacaoCronometro;
+    startCronometro = millis() - tempoInicio;
+
     cronometroZerado = true;
   }
   
@@ -387,7 +392,7 @@ void escreve(const char* texto) {
 
   display.clearDisplay();
   display.print(texto);
-  display.display();
+  // display.display();
 
 }
 
@@ -397,18 +402,32 @@ void selecaoModos() {
 
   if (digitalRead(CHAVE1_PIN) == LOW) {
     delay(2000);
-
     jogo();
 
   } else if (digitalRead(CHAVE2_PIN) == LOW) {
     display.clearDisplay();
     display.setCursor(5, 5);
     display.print("Recorde atual: ");
-    display.print(recorde);
+    unsigned long tempo = recorde / 1000;
+    unsigned long minutos = tempo / 60;
+    unsigned long segundos = tempo % 60;
 
-  } else {
+    display.setCursor(10, 20);
+    if (minutos < 10) {  //formata para exibir zeros a esquerda caso o numero seja menor que 10
+      display.print("0");
+    }
+    display.print(minutos);
+    display.print(":");
+
+    if (segundos < 10) {  //formata para exibir zeros a esquerda
+      display.print("0");
+    }
+    display.print(segundos);
+    display.display();  
+
+  } else{
     carroequilibrado = false;
-    delay(3000);
+    cronometroZerado = false;
     display.clearDisplay();
     display.setCursor(5, 10);
     display.print("<---");
@@ -424,6 +443,7 @@ void selecaoModos() {
 
 void setup() {
 
+  salvaTempoInicio();
   // Inicializa a EEPROM
   EEPROM.begin(512);
 
@@ -469,14 +489,10 @@ void setup() {
   display.clearDisplay();
   display.setCursor(40, 3);
   display.print("# CEFET #");
-  display.setCursor(10, 12);
+  display.setCursor(10, 15);
   display.print("Jogo do Equilibrio");
   display.display();
-
-  //  lcd.setCursor(0, 0);
-  // lcd.print("#  CEFET  #");
-  // lcd.setCursor(0, 1);
-  // lcd.print("JogoDoEquilibrio");
+  delay(5000);
 
   //Definição dos pinso de componentes
   pinMode(BUZZER_PIN, OUTPUT);
