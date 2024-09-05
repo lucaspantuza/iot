@@ -199,22 +199,11 @@ void takeOnMe() {  //toca Take On Me (A-HA)  //TIRAR OQ N USA
   }
 }
 
-void writeIntIntoEEPROM(int address, int number) {
-  byte byte1 = number >> 8;
-  byte byte2 = number & 0xFF;
-  EEPROM.write(address, byte1);
-  EEPROM.write(address + 1, byte2);
-}
 
-int readIntFromEEPROM(int address){
-  byte byte1 = EEPROM.read(address);
-  byte byte2 = EEPROM.read(address + 1);
-  return (byte1 << 8) + byte2;
-}
+void ganhaJogo(long tempoDecorrido) {
 
-void ganhaJogo(int tempoDecorrido) {
-
-  int recorde = EEPROM.read(0);
+  long recorde;
+  EEPROM.get(0, recorde);
 
   digitalWrite(BUZZER_PIN, LOW);
 
@@ -233,12 +222,11 @@ void ganhaJogo(int tempoDecorrido) {
 
   // Grava um novo record
   if (tempoDecorrido < recorde) {
-    writeIntIntoEEPROM(0, tempoDecorrido);
-  // TODO
+    EEPROM.put(0, tempoDecorrido);
     // TODO musica de novo record
+    // TODO takeOnMe(); TIRAR A RAMPA !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   } else {
     // TODO musica de vitoria simples
-    // TODO takeOnMe(); TIRAR A RAMPA !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   }
 
   // Prende na telinha de vitoria ate que o usuario altere a posicao da chave seletora
@@ -314,7 +302,7 @@ int cronometro(bool zerar) {       //faz a contagem do tempo e printa no lcd
     tempoInicio = millis();
   }
 
-  int tempoDecorrido = (millis() - tempoInicio) / 1000;
+  long tempoDecorrido = (millis() - tempoInicio) / 1000;
 
   // Antes de mostrar na tela, verifica se a ultima vez que mandou gravar na tela passou pelo menos 1 segundo
   if (millis() - ultimaGravacaoCronometro >= 1000) {
@@ -333,19 +321,16 @@ int cronometro(bool zerar) {       //faz a contagem do tempo e printa no lcd
 
 
 
-
 void setup() {
-
-  // Inicializa a EEPROM
-  // EEPROM.begin(512);
-  // EEPROM.write(0, 6039);  // 6039 equivale a 99:99  //grava zero para quando nao tem nada gravado ainda no arduino
-  writeIntIntoEEPROM(0, 6039);
-  // EEPROM.commit();        // Isso é importante para gravar os dados na EEPROM
-  Serial.println(readIntFromEEPROM(0));
-//TODO sera que mantem a primeira gravacao aqui?
-  microservo.attach(SERVO_PIN, 500, 2400);
-
   Serial.begin(9600);
+
+  //grava 99:59 (no formato long) para quando nao tem nada gravado ainda no arduino
+  //EEPROM.begin(4); //alocacao da EEPROM
+  //EEPROM.put(0, 5999); // 5999 equivale a 99:59
+  //long temp;
+  //EEPROM.get(0,temp);
+
+  microservo.attach(SERVO_PIN, 500, 2400);
 
   // Chave seletora
   pinMode(CHAVE1_PIN, INPUT_PULLUP);
@@ -397,7 +382,9 @@ String converteTempo(int tempo) {
   return resposta;
 }
 
+
 void loop() {
+
 
   if (digitalRead(CHAVE1_PIN) == LOW) {
     // MODO 1 - chave selecao esquerda
@@ -415,8 +402,31 @@ void loop() {
     display.print("Recorde atual: ");
     display.print(converteTempo(EEPROM.read(0)));
     display.display();
-//TODO zerar eprom
 
+    // Gambiarra para zerar o record do jogo gravado na EEPROM
+    // Para zerar, tem que estar no modo que exibe recorde, e entao leva o
+    // potenciometro para o extremo MIN, extremo MAX, extremo MIN e extremo MAX
+    int potenciometroValor;
+    int fase = 0;
+    while (fase < 4 && (digitalRead(CHAVE2_PIN) == LOW)) {
+      potenciometroValor = map(analogRead(POTENTIOMETER_PIN), 2500, 0, 0, 10);
+      if (potenciometroValor == 0 && fase == 0) fase++;
+      if (potenciometroValor == 10 && fase == 1) fase++;
+      if (potenciometroValor == 0 && fase == 2) fase++;
+      if (potenciometroValor == 10 && fase == 3) fase++;
+      if (fase == 4) {
+        EEPROM.begin(4);      //alocacao da EEPROM
+        EEPROM.put(0, 5999);  // 5999 equivale a 99:59
+  	  	// 3 bips
+        for (int i = 0; i < 3; i++) {
+          digitalWrite(BUZZER_PIN, HIGH);
+          delay(500);
+          digitalWrite(BUZZER_PIN, LOW);
+          delay(500);
+        }
+      }
+      delay(50);
+    }
 
   } else {
     // MODO 3 - chave selecao central
