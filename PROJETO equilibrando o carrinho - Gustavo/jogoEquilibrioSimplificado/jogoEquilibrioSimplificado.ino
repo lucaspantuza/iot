@@ -308,6 +308,7 @@ void jogo() {  //roda o modo de jogo baseado em durar mais tempo
       // Se o sensor de luz estiver acima de 300, desliga o LED e atualiza o tempo
       if (sensorluz > 1500) {        //se o sensor de luz tiver com intesidade acima de 300
         digitalWrite(LED_PIN, LOW);       // led permanece desligado;
+        digitalWrite(BUZZER_PIN, LOW);
         millisTempoled = millis();  //millistempoled recebe o atual;
       }
     }
