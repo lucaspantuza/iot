@@ -6,21 +6,19 @@
 #include <LiquidCrystal_I2C.h>
 #include "multimidia.h"
 
-#define B1 14   //aumenta
-#define B2 27   //diminui
-#define B3 26   //start
-#define B4 25   //tirar
-#define B5 33   //tirar
-#define B6 32   //tirar
+#define B1 26   //aumenta 
+#define B2 25   //diminui
+#define B3 27   //enter
+
 #define BUZZER 19
 
 #define ledVd 16
 #define ledVm 17
 #define ledAz 4
 
+#define MUMMAX 100
 
 LiquidCrystal_I2C lcd(0x27, 16, 2);  // set the LCD address to 0x3F for a 20 chars and 4 line display
-
 
 
 int statusB1 = 0;
@@ -33,7 +31,7 @@ int statusB6 = 0;
 int numSecreto = 0;
 int numUsuario = 0;
 int resultado = 0;
-int vidas = 5;
+int vidas = 7;
 int erros = 0;
 int tentativas = 0;
 int statusJogo = 0;
@@ -59,8 +57,6 @@ void corzinha (int red, int green, int blue) {
 }
 
 void takeOnMe () { //toca Take On Me 
- 
-
   int tempo = 140;
 
   // notes of the moledy followed by the duration.
@@ -76,18 +72,7 @@ void takeOnMe () { //toca Take On Me
     NOTE_FS5,8, NOTE_FS5,8,NOTE_D5,8, NOTE_B4,8, REST,8, NOTE_B4,8, REST,8, NOTE_E5,8, 
     REST,8, NOTE_E5,8, REST,8, NOTE_E5,8, NOTE_GS5,8, NOTE_GS5,8, NOTE_A5,8, NOTE_B5,8,
     NOTE_A5,8, NOTE_A5,8, NOTE_A5,8, NOTE_E5,8, REST,8, NOTE_D5,8, REST,8, NOTE_FS5,8, 
-    REST,8, NOTE_FS5,8, REST,8, NOTE_FS5,8, NOTE_E5,8, NOTE_E5,8, NOTE_FS5,8, NOTE_E5,8,
-    /*NOTE_FS5,8, NOTE_FS5,8,/*NOTE_D5,8, NOTE_B4,8, REST,8, NOTE_B4,8, REST,8, NOTE_E5,8, 
-        
-    REST,8, NOTE_E5,8, REST,8, NOTE_E5,8, NOTE_GS5,8, NOTE_GS5,8, NOTE_A5,8, NOTE_B5,8,
-    NOTE_A5,8, NOTE_A5,8, NOTE_A5,8, NOTE_E5,8, REST,8, NOTE_D5,8, REST,8, NOTE_FS5,8, 
-    REST,8, NOTE_FS5,8, REST,8, NOTE_FS5,8, NOTE_E5,8, NOTE_E5,8, NOTE_FS5,8, NOTE_E5,8,
-    NOTE_FS5,8, NOTE_FS5,8,NOTE_D5,8, NOTE_B4,8, REST,8, NOTE_B4,8, REST,8, NOTE_E5,8, 
-    REST,8, NOTE_E5,8, REST,8, NOTE_E5,8, NOTE_GS5,8, NOTE_GS5,8, NOTE_A5,8, NOTE_B5,8,
-        
-    NOTE_A5,8, NOTE_A5,8, NOTE_A5,8, NOTE_E5,8, REST,8, NOTE_D5,8, REST,8, NOTE_FS5,8, 
-    REST,8, NOTE_FS5,8, REST,8, NOTE_FS5,8, NOTE_E5,8, NOTE_E5,8, NOTE_FS5,8, NOTE_E5,8,*/
-        
+    REST,8, NOTE_FS5,8, REST,8, NOTE_FS5,8, NOTE_E5,8, NOTE_E5,8, NOTE_FS5,8, NOTE_E5,8,  
   };
 
   // sizeof gives the number of bytes, each int value is composed of two bytes (16 bits)
@@ -152,16 +137,11 @@ void converte () { //converte as vidas do usuário em string para printar no lcd
 }
 
 void numAleatorio () {  //gera um número aleatório
-  numSecreto = random(10);
+  numSecreto = random(MUMMAX+1);
 }
 
-void debounceStart () {  //impede que haja leituras erradas do botão start
-  delay(500);
-}
 
-void debounceSeta () {  //impede que haja leituras erradas das setas
-  delay(100);
-}
+
 
 void verificaResposta () {  //verifica a resposta do usuário
   tentativas++;
@@ -185,7 +165,7 @@ void verificaResposta () {  //verifica a resposta do usuário
 }
 
 void reiniciaJogo () {  //função para reinciar o jogo
-  numSecreto = 0;
+  numAleatorio();
   numUsuario = 0;
   vidas = 5;
   erros = 0;
@@ -193,10 +173,6 @@ void reiniciaJogo () {  //função para reinciar o jogo
   resultado = 0;
 
   apagaLeds(ledVm, ledVd, ledAz);
-}
-
-void fechaJogo () {   //função que chama função exit(0);
-  exit(0);
 }
 
 void ganhaJogo () { //função para quando ganhar o jogo
@@ -273,7 +249,7 @@ void verificaBotao () { //verifica se algum botão foi pressionado
     luzinhaBranca(ledVm, ledVd, ledAz);
 
     numUsuario += 1;
-    if (numUsuario > 10) {
+    if (numUsuario > MUMMAX) {
       numUsuario = 0;
     }
     converte();
@@ -288,7 +264,7 @@ void verificaBotao () { //verifica se algum botão foi pressionado
     lcd.setCursor(7, 1);
     lcd.print(numUsuario);
     apagaLeds(ledVm, ledVd, ledAz);
-    debounceSeta();
+    delay(75);
   }
 
   if (digitalRead(B2) == HIGH) {
@@ -297,7 +273,7 @@ void verificaBotao () { //verifica se algum botão foi pressionado
 
     numUsuario -= 1;
     if (numUsuario < 0) {
-      numUsuario = 10;
+      numUsuario = MUMMAX;
     }
     converte();
     lcd.clear();
@@ -311,7 +287,7 @@ void verificaBotao () { //verifica se algum botão foi pressionado
     lcd.setCursor(7, 1);
     lcd.print(numUsuario);
     apagaLeds(ledVm, ledVd, ledAz);
-    debounceSeta();
+    delay(75);
   }
 
   if (digitalRead(B3) == HIGH) {
@@ -330,12 +306,7 @@ void verificaBotao () { //verifica se algum botão foi pressionado
     if (resultado == 4) {
       perdeJogo();
     }
-    debounceStart();
-  }
-
-  if (digitalRead(B4) == HIGH) {
-    som();
-    fechaJogo();
+    delay(500);
   }
 }
 
@@ -353,9 +324,7 @@ void setup() {
   pinMode(B1, INPUT);
   pinMode(B2, INPUT);
   pinMode(B3, INPUT);
-  pinMode(B4, INPUT);
-  pinMode(B5, INPUT);
-  pinMode(B6, INPUT);
+
   pinMode(ledVd, OUTPUT);
   pinMode(ledVm, OUTPUT);
   pinMode(BUZZER, OUTPUT);
@@ -400,7 +369,6 @@ void setup() {
   lcd.setCursor(7, 1);
   lcd.print(numUsuario);
 }
-
 
 // the loop function runs over and over again forever
 void loop() {

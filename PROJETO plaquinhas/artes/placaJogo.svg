@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg1"
+   sodipodi:docname="placaJogo.svg"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="3.1162037"
+     inkscape:cx="274.21186"
+     inkscape:cy="1106.4745"
+     inkscape:window-width="1848"
+     inkscape:window-height="1941"
+     inkscape:window-x="1678"
+     inkscape:window-y="27"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Camada 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <circle
+       style="fill:#000000;stroke-width:0.125"
+       id="path1"
+       cx="4.5059724"
+       cy="293.44183"
+       r="2.9000001" />
+    <circle
+       style="fill:#000000;stroke-width:0.125"
+       id="path1-9-69"
+       cx="29.072008"
+       cy="293.44183"
+       r="2.9000001" />
+    <path
+       id="path1-4"
+       style="fill:#000000;stroke-width:0.125"
+       d="M 41.966431 288.88831 L 41.966431 291.88864 L 42.419116 291.88864 A 2.9000001 2.9000001 0 0 0 41.966431 293.44204 A 2.9000001 2.9000001 0 0 0 44.866512 296.3416 A 2.9000001 2.9000001 0 0 0 47.766593 293.44204 A 2.9000001 2.9000001 0 0 0 47.314425 291.88864 L 66.985059 291.88864 A 2.9000001 2.9000001 0 0 0 66.532373 293.44204 A 2.9000001 2.9000001 0 0 0 69.432454 296.3416 A 2.9000001 2.9000001 0 0 0 72.332536 293.44204 A 2.9000001 2.9000001 0 0 0 71.880367 291.88864 L 72.332536 291.88864 L 72.332536 288.88831 L 41.966431 288.88831 z " />
+  </g>
+</svg>
