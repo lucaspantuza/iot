@@ -1,29 +1,5 @@
-/*
-  Blink
+//Para Larissa 
 
-  Turns an LED on for one second, then off for one second, repeatedly.
-
-  Most Arduinos have an on-board LED you can control. On the UNO, MEGA and ZERO
-  it is attached to digital pin 13, on MKR1000 on pin 6. LED_BUILTIN is set to
-  the correct LED pin independent of which board is used.
-  If you want to know what pin the on-board LED is connected to on your Arduino
-  model, check the Technical Specs of your board at:
-  https://www.arduino.cc/en/Main/Products
-
-  modified 8 May 2014
-  by Scott Fitzgerald
-  modified 2 Sep 2016
-  by Arturo Guadalupi
-  modified 8 Sep 2016
-  by Colby Newman
-
-  This example code is in the public domain.
-
-  https://www.arduino.cc/en/Tutorial/BuiltInExamples/Blink
-*/
-
-
-// selecionar a placa "ESP32 Dev Module"
 
 int x = 0;
 int y = 0;
@@ -37,8 +13,8 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 #define B1 14
 #define B2 12
-#define B3 32
-#define B4 35
+#define B3 35
+#define B4 32
 
 #define B5 15
 #define B6 2
@@ -50,10 +26,101 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);
 #define DIPS3 5
 #define DIPS4 18
 
-#define LED_AZUL 26
-#define LED_AMARELO 27
-#define LED_VERDE 25
-#define LED_VERMELHO 33
+#define LED_AZUL 25
+#define LED_AMARELO 26
+#define LED_VERDE 33
+#define LED_VERMELHO 27
+
+
+//  Caracteres especiais
+byte play[] = {
+  B00000,
+  B01000,
+  B01100,
+  B01110,
+  B01111,
+  B01110,
+  B01100,
+  B01000
+};
+
+byte yalp[] = {
+  B00000,
+  B00010,
+  B00110,
+  B01110,
+  B11110,
+  B01110,
+  B00110,
+  B00010
+};//
+
+byte caveira[] = {
+  B00000,
+  B01110,
+  B10101,
+  B11011,
+  B01110,
+  B01110,
+  B00000,
+  B00000
+};
+
+byte notaMusical1[] = {
+  B00001,
+  B00011,
+  B00101,
+  B01001,
+  B01001,
+  B01011,
+  B11011,
+  B11000
+};
+
+byte notaMusical2[] = {
+  B00000,
+  B00000,
+  B00100,
+  B00110,
+  B00100,
+  B01100,
+  B01100,
+  B00000
+};
+
+byte tetrisLCD[] = {
+  B00111,
+  B11010,
+  B11000,
+  B00001,
+  B11101,
+  B10001,
+  B01101,
+  B11000
+};
+
+byte maquina[] = {
+  B11111,
+  B10001,
+  B10001,
+  B11111,
+  B10101,
+  B11111,
+  B11111,
+  B11111
+};
+
+byte snow[] = {
+  B01000,
+  B11101,
+  B01011,
+  B00001,
+  B00100,
+  B01110,
+  B00100,
+  B10000
+};//
+
 
 //  Variáveis menu
 int statusD1 = 0;
@@ -136,24 +203,16 @@ void luzinha () { //função para piscar as luzes aleatoriamente
 
   if (ligarLED_AZUL) {
     digitalWrite(LED_AZUL, HIGH);
-  } /*else{
-    digitalWrite(LED_AZUL, LOW);
-  }*/
+  }
   if (ligarLED_AMARELO) {
     digitalWrite(LED_AMARELO, HIGH);
-  } /*else{
-    digitalWrite(LED_AMARELO, LOW);
-  }*/
+  }
   if (ligarLED_VERDE) {
     digitalWrite(LED_VERDE, HIGH);
-  } /*else{
-    digitalWrite(LED_VERDE, LOW);
-  }*/
+  }
   if (ligarLED_VERMELHO) {
     digitalWrite(LED_VERMELHO, HIGH);
-  } /*else{
-    digitalWrite(LED_VERMELHO, LOW);
-  }*/
+  }
 }
 
 void takeOnMeSemLuzinha () { //toca Take On Me (não pisca os leds)
@@ -263,18 +322,7 @@ void takeOnMeSemLuzinha () { //toca Take On Me (não pisca os leds)
     NOTE_FS5,8, NOTE_FS5,8,NOTE_D5,8, NOTE_B4,8, REST,8, NOTE_B4,8, REST,8, NOTE_E5,8, 
     REST,8, NOTE_E5,8, REST,8, NOTE_E5,8, NOTE_GS5,8, NOTE_GS5,8, NOTE_A5,8, NOTE_B5,8,
     NOTE_A5,8, NOTE_A5,8, NOTE_A5,8, NOTE_E5,8, REST,8, NOTE_D5,8, REST,8, NOTE_FS5,8, 
-    REST,8, NOTE_FS5,8, REST,8, NOTE_FS5,8, NOTE_E5,8, NOTE_E5,8, NOTE_FS5,8, NOTE_E5,8,
-    NOTE_FS5,8, NOTE_FS5,8,NOTE_D5,8, NOTE_B4,8, REST,8, NOTE_B4,8, REST,8, NOTE_E5,8, 
-        
-    REST,8, NOTE_E5,8, REST,8, NOTE_E5,8, NOTE_GS5,8, NOTE_GS5,8, NOTE_A5,8, NOTE_B5,8,
-    NOTE_A5,8, NOTE_A5,8, NOTE_A5,8, NOTE_E5,8, REST,8, NOTE_D5,8, REST,8, NOTE_FS5,8, 
-    REST,8, NOTE_FS5,8, REST,8, NOTE_FS5,8, NOTE_E5,8, NOTE_E5,8, NOTE_FS5,8, NOTE_E5,8,
-    NOTE_FS5,8, NOTE_FS5,8,NOTE_D5,8, NOTE_B4,8, REST,8, NOTE_B4,8, REST,8, NOTE_E5,8, 
-    REST,8, NOTE_E5,8, REST,8, NOTE_E5,8, NOTE_GS5,8, NOTE_GS5,8, NOTE_A5,8, NOTE_B5,8,
-        
-    NOTE_A5,8, NOTE_A5,8, NOTE_A5,8, NOTE_E5,8, REST,8, NOTE_D5,8, REST,8, NOTE_FS5,8, 
-    REST,8, NOTE_FS5,8, REST,8, NOTE_FS5,8, NOTE_E5,8, NOTE_E5,8, NOTE_FS5,8, NOTE_E5,8,
-        
+    REST,8, NOTE_FS5,8, REST,8, NOTE_FS5,8, NOTE_E5,8, NOTE_E5,8, NOTE_FS5,8, NOTE_E5,8,    
   };
 
   // sizeof gives the number of bytes, each int value is composed of two bytes (16 bits)
@@ -312,7 +360,7 @@ void takeOnMeSemLuzinha () { //toca Take On Me (não pisca os leds)
   }
 }
 
-void furElise() { //toca furElise
+void furElise() { //toca furElise //nota1
   #define NOTE_C4  262
   #define NOTE_E4  330
   #define NOTE_GS4 415
@@ -358,9 +406,13 @@ void furElise() { //toca furElise
 
   if (digitalRead(B1) == HIGH) {
     lcd.clear();
+    lcd.home();
+    lcd.write(0);
     lcd.print("Fur Elise");
     lcd.setCursor(0, 1);
-    lcd.print("Beethoven");
+    lcd.print("Beethoven ");
+    lcd.write(4);
+
     // iterate over the notes of the melody.
     // Remember, the array is twice the number of notes (notes + durations)
     for (int thisNote = 0; thisNote < notes * 2; thisNote = thisNote + 2) {
@@ -383,6 +435,7 @@ void furElise() { //toca furElise
 
       // Wait for the specief duration before playing the next note.
       delay(noteDuration);
+      encerraJogo();
 
       // stop the waveform generation before the next note.
       noTone(buzzer);
@@ -392,7 +445,7 @@ void furElise() { //toca furElise
   }
 }
 
-void takeOnMe () { //toca Take On Me (pisca os leds)
+void takeOnMe () { //toca Take On Me (pisca os leds)  //maquina
   #define NOTE_B0  31
   #define NOTE_C1  33
   #define NOTE_CS1 35
@@ -538,6 +591,154 @@ void takeOnMe () { //toca Take On Me (pisca os leds)
     }
 
     // we only play the note for 90% of the duration, leaving 10% as a pause
+    tone(BUZZER, melody[thisNote], 0.9);
+
+    luzinha(); //faz os LEDs piscarem aleatoriamente durante a música
+    encerraJogo();
+
+    // Wait for the specief duration before playing the next note.
+    delay(noteDuration);
+
+    // stop the waveform generation before the next note.
+    noTone(BUZZER);
+  }
+}
+
+void takeOnMeDemo () { //toca Take On Me (pisca os leds)  //maquina
+  #define NOTE_B0  31
+  #define NOTE_C1  33
+  #define NOTE_CS1 35
+  #define NOTE_D1  37
+  #define NOTE_DS1 39
+  #define NOTE_E1  41
+  #define NOTE_F1  44
+  #define NOTE_FS1 46
+  #define NOTE_G1  49
+  #define NOTE_GS1 52
+  #define NOTE_A1  55
+  #define NOTE_AS1 58
+  #define NOTE_B1  62
+  #define NOTE_C2  65
+  #define NOTE_CS2 69
+  #define NOTE_D2  73
+  #define NOTE_DS2 78
+  #define NOTE_E2  82
+  #define NOTE_F2  87
+  #define NOTE_FS2 93
+  #define NOTE_G2  98
+  #define NOTE_GS2 104
+  #define NOTE_A2  110
+  #define NOTE_AS2 117
+  #define NOTE_B2  123
+  #define NOTE_C3  131
+  #define NOTE_CS3 139
+  #define NOTE_D3  147
+  #define NOTE_DS3 156
+  #define NOTE_E3  165
+  #define NOTE_F3  175
+  #define NOTE_FS3 185
+  #define NOTE_G3  196
+  #define NOTE_GS3 208
+  #define NOTE_A3  220
+  #define NOTE_AS3 233
+  #define NOTE_B3  247
+  #define NOTE_C4  262
+  #define NOTE_CS4 277
+  #define NOTE_D4  294
+  #define NOTE_DS4 311
+  #define NOTE_E4  330
+  #define NOTE_F4  349
+  #define NOTE_FS4 370
+  #define NOTE_G4  392
+  #define NOTE_GS4 415
+  #define NOTE_A4  440
+  #define NOTE_AS4 466
+  #define NOTE_B4  494
+  #define NOTE_C5  523
+  #define NOTE_CS5 554
+  #define NOTE_D5  587
+  #define NOTE_DS5 622
+  #define NOTE_E5  659
+  #define NOTE_F5  698
+  #define NOTE_FS5 740
+  #define NOTE_G5  784
+  #define NOTE_GS5 831
+  #define NOTE_A5  880
+  #define NOTE_AS5 932
+  #define NOTE_B5  988
+  #define NOTE_C6  1047
+  #define NOTE_CS6 1109
+  #define NOTE_D6  1175
+  #define NOTE_DS6 1245
+  #define NOTE_E6  1319
+  #define NOTE_F6  1397
+  #define NOTE_FS6 1480
+  #define NOTE_G6  1568
+  #define NOTE_GS6 1661
+  #define NOTE_A6  1760
+  #define NOTE_AS6 1865
+  #define NOTE_B6  1976
+  #define NOTE_C7  2093
+  #define NOTE_CS7 2217
+  #define NOTE_D7  2349
+  #define NOTE_DS7 2489
+  #define NOTE_E7  2637
+  #define NOTE_F7  2794
+  #define NOTE_FS7 2960
+  #define NOTE_G7  3136
+  #define NOTE_GS7 3322
+  #define NOTE_A7  3520
+  #define NOTE_AS7 3729
+  #define NOTE_B7  3951
+  #define NOTE_C8  4186
+  #define NOTE_CS8 4435
+  #define NOTE_D8  4699
+  #define NOTE_DS8 4978
+  #define REST      0
+
+  int tempo = 140;
+
+  // notes of the moledy followed by the duration.
+  // a 4 means a quarter note, 8 an eighteenth , 16 sixteenth, so on
+  // !!negative numbers are used to represent dotted notes,
+  // so -4 means a dotted quarter note, that is, a quarter plus an eighteenth!!
+  int melody[] = {
+
+    // Take on me, by A-ha
+    // Score available at https://musescore.com/user/27103612/scores/4834399
+    // Arranged by Edward Truong
+
+    NOTE_FS5,8, NOTE_FS5,8,NOTE_D5,8, NOTE_B4,8, REST,8, NOTE_B4,8, REST,8, NOTE_E5,8, 
+    REST,8, NOTE_E5,8, REST,8, NOTE_E5,8, NOTE_GS5,8, NOTE_GS5,8, NOTE_A5,8, NOTE_B5,8,
+    NOTE_A5,8, NOTE_A5,8, NOTE_A5,8, NOTE_E5,8, REST,8, NOTE_D5,8, REST,8, NOTE_FS5,8, 
+    REST,8, NOTE_FS5,8, REST,8, NOTE_FS5,8, NOTE_E5,8, NOTE_E5,8, NOTE_FS5,8, NOTE_E5,8,       
+  };
+
+  // sizeof gives the number of bytes, each int value is composed of two bytes (16 bits)
+  // there are two values per note (pitch and duration), so for each note there are four bytes
+  int notes = sizeof(melody) / sizeof(melody[0]) / 2;
+
+  // this calculates the duration of a whole note in ms
+  int wholenote = (60000 * 4) / tempo;
+
+  int divider = 0, noteDuration = 0;
+
+  // iterate over the notes of the melody.
+  // Remember, the array is twice the number of notes (notes + durations)
+  for (int thisNote = 0; thisNote < notes * 2; thisNote = thisNote + 2) {
+
+    // calculates the duration of each note
+    divider = melody[thisNote + 1];
+    if (divider > 0) {
+      // regular note, just proceed
+      noteDuration = (wholenote) / divider;
+    } else if (divider < 0) {
+      // dotted notes are represented with negative durations!!
+      noteDuration = (wholenote) / abs(divider);
+      noteDuration *= 1.5; // increases the duration in half for dotted notes
+    }
+
+    // we only play the note for 90% of the duration, leaving 10% as a pause
     tone(BUZZER, melody[thisNote], noteDuration * 0.9);
 
     luzinha(); //faz os LEDs piscarem aleatoriamente durante a música
@@ -550,7 +751,7 @@ void takeOnMe () { //toca Take On Me (pisca os leds)
   }
 }
 
-void theGodfather () {  //toca The Godfather Theme (O Poderoso Chefão)
+void theGodfather () {  //toca The Godfather Theme (O Poderoso Chefão)  //caveira
   #define NOTE_B0  31
   #define NOTE_C1  33
   #define NOTE_CS1 35
@@ -721,13 +922,14 @@ void theGodfather () {  //toca The Godfather Theme (O Poderoso Chefão)
 
     // Wait for the specief duration before playing the next note.
     delay(noteDuration);
+    encerraJogo();
 
     // stop the waveform generation before the next note.
     noTone(BUZZER);
   }
 }
 
-void silentNight () { //toca Silent Night
+void silentNight () { //toca Silent Night //snow
   #define NOTE_B0  31
   #define NOTE_C1  33
   #define NOTE_CS1 35
@@ -898,13 +1100,14 @@ void silentNight () { //toca Silent Night
 
     // Wait for the specief duration before playing the next note.
     delay(noteDuration);
+    encerraJogo();
 
     // stop the waveform generation before the next note.
     noTone(BUZZER);
   }
 }
 
-void brahms () { //toca Brahms’ Lullaby (Wiegenlied)
+void brahms () { //toca Brahms’ Lullaby (Wiegenlied)  //nota2
   #define NOTE_B0  31
   #define NOTE_C1  33
   #define NOTE_CS1 35
@@ -1061,13 +1264,14 @@ void brahms () { //toca Brahms’ Lullaby (Wiegenlied)
 
     // Wait for the specief duration before playing the next note.
     delay(noteDuration);
+    encerraJogo();
 
     // stop the waveform generation before the next note.
     noTone(BUZZER);
   }
 }
 
-void tetris () { //toca tema de tetris e verifica modo de jogo
+void tetris () { //toca tema de tetris e verifica modo de jogo  //tetris
   #define NOTE_B0  31
   #define NOTE_C1  33
   #define NOTE_CS1 35
@@ -1233,6 +1437,7 @@ void tetris () { //toca tema de tetris e verifica modo de jogo
 
     // Wait for the specief duration before playing the next note.
     delay(noteDuration);
+    encerraJogo();
     
     // stop the waveform generation before the next note.
     noTone(BUZZER);
@@ -1241,10 +1446,58 @@ void tetris () { //toca tema de tetris e verifica modo de jogo
 
 
 //  FUNÇÕES PRESSKILL
-int ButtonTest(int buttonPin, int state, int lastState, int playerState, int buttonNumber) {
-  if (digitalRead(B5) == HIGH) {
-    encerraJogo();
+void lcdP1 () {
+  lcd.home();
+  lcd.print("Azul: ");
+  if (p1State = 0) {
+    lcd.write(3);
   }
+  if (p1State = 1) {
+    lcd.print(p1Points);
+  }
+}
+
+void lcdP2 () {
+  lcd.setCursor(0, 1);
+  lcd.print("Amarelo: ");
+  if (p2State = 0) {
+    lcd.write(3);
+  }
+  if (p2State = 1) {
+    lcd.print(p2Points);
+  }
+}
+
+void lcdP3 () {
+  lcd.setCursor(7, 0);
+  lcd.print("Verde: ");
+  if (p3State = 0) {
+    lcd.write(3);
+  }
+  if (p3State = 1) {
+    lcd.print(p3Points);
+  }
+}
+
+void lcdP4 () {
+  lcd.setCursor(5, 1);
+  lcd.print("Vermelho: ");
+  if (p4State = 0) {
+    lcd.write(3);
+  }
+  if (p4State = 1) {
+    lcd.print(p4Points);
+  }
+}
+
+void lcdPresskill() {
+  lcdP1();
+  lcdP2();
+  lcdP3();
+  lcdP4();
+}
+
+int ButtonTest(int buttonPin, int state, int lastState, int playerState, int buttonNumber) {
   // Test if the state of the button is different from the last recorded state. If so, and the digitalRead is now HIGH, the button has been pressed.
   state = digitalRead(buttonPin);
   if (state != lastState) {
@@ -1262,6 +1515,8 @@ int ButtonTest(int buttonPin, int state, int lastState, int playerState, int but
 }
 
 void ButtonPressed(int playerNumber) {
+  lcdPresskill();
+
   if (deadZone == true) {
     // If a player hit the button during the deadzone, they loose.
     if (playerNumber == 1) { p1State = 0; }
@@ -1329,7 +1584,7 @@ void PlayerWin(int p1NewState, int p2NewState, int p3NewState, int p4NewState) {
     lcd.print("ganhou o jogo!");
     digitalWrite(LED_AZUL, HIGH);
   } else if (p2State == 2) {
-    lcd.setCursor(0, 0);
+    lcd.home();
     lcd.print("Jogador amarelo");
     lcd.setCursor(1, 1);
     lcd.print("ganhou o jogo!");
@@ -1341,7 +1596,7 @@ void PlayerWin(int p1NewState, int p2NewState, int p3NewState, int p4NewState) {
     lcd.print("ganhou o jogo!");
     digitalWrite(LED_VERDE, HIGH);
   } else if (p4State == 2) {
-    lcd.setCursor(0, 0);
+    lcd.home();
     lcd.print("Jogador vermelho");
     lcd.setCursor(1, 1);
     lcd.print("ganhou o jogo!");
@@ -1388,18 +1643,6 @@ void DeadZoneTimer() {
 }
 
 void Debug() {
-  /*
-  Serial.print("b1State = ");
-  Serial.print(b1State);
-  Serial.print(" | b2State = ");
-  Serial.print(b2State);
-  Serial.print(" | b3State = ");
-  Serial.print(b3State);
-  Serial.print(" | b4State = ");
-  Serial.println(b4State);
-  delay(10);
-  */
-
   Serial.print("p1State = ");
   Serial.print(p1State);
   Serial.print(" | p2State = ");
@@ -1667,21 +1910,21 @@ int leituraBotoesJogo(int fase) {
 }
 
 // Função com efeitos de Perdeu o Jogo
-void perdeJogo() {
+void perdeJogo () {
   lcd.clear();
   lcd.setCursor(5, 0);
   lcd.print("Errou!");
   somPerdeu();
   if (faseJogo > recorde) {
     recorde = faseJogo - 1;
-    lcd.setCursor(0,0);
+    lcd.setCursor(0, 0);
     lcd.print("Recorde batido!");
-    lcd.setCursor(0,1);
+    lcd.setCursor(0, 1);
     lcd.print("Novo recorde->");
     lcd.print(recorde);
-    takeOnMe();
-    EEPROM.write(enderecoRecorde, recorde);
-    EEPROM.commit();  // Isso é importante para gravar os dados na EEPROM
+    takeOnMeDemo();
+    // EEPROM.write(enderecoRecorde, recorde);
+    // EEPROM.commit();  // Isso é importante para gravar os dados na EEPROM
   }
   Serial.println("perdeJogo()");
   Serial.print("Pontuação atingida: ");
@@ -1691,7 +1934,7 @@ void perdeJogo() {
 
 
   lcd.clear();
-  lcd.setCursor(0,0);
+  lcd.setCursor(0, 0);
   lcd.print("Fase -> ");
   lcd.print(faseJogo);
   lcd.setCursor(0,1);
@@ -1714,14 +1957,15 @@ void perdeJogo() {
 }
 
 // Função com efeitos de Ganhou o Jogo
-void ganhouJogo() {
+void ganhouJogo () {
   lcd.setCursor(4, 0);
   lcd.print("PARABENS");
   lcd.setCursor(2, 1);
   lcd.print("VOCE VENCEU!");
 
-  takeOnMe();
+  takeOnMeDemo();
   Serial.print("ganhouJogo()");
+
   for (int i = 0; i < 20; i++) {
     digitalWrite(LED_VERMELHO, LOW);
     delay(40);
@@ -1856,6 +2100,64 @@ void verificaModo () {
     statusD3 = digitalRead(DIPS3);  //SONG
     statusD4 = digitalRead(DIPS4);  //DJ
 
+    furElise(); //B1
+    if (digitalRead(B2) == HIGH) { //silent night
+      lcd.clear();
+      lcd.home();
+      lcd.write(0);
+      lcd.print("Silent Night");
+      lcd.setCursor(0, 1);
+      lcd.print("Frank Sinatra ");
+      lcd.write(1);
+      silentNight();
+      lcd.clear();
+    }
+    if (digitalRead(B3) == HIGH) { //take on me
+      lcd.clear();
+      lcd.home();
+      lcd.write(0);
+      lcd.print("Take on me");
+      lcd.setCursor(0, 1);
+      lcd.print("A-HA ");
+      lcd.write(7);
+      takeOnMe();
+      lcd.clear();
+    }
+    if (digitalRead(B4) == HIGH) {  //Brahms
+      lcd.clear();
+      lcd.home();
+      lcd.write(0);
+      lcd.print("Wiegenlied");
+      lcd.setCursor(0, 1);
+      lcd.print("Johannes Brahms ");
+      lcd.write(5);
+      brahms();
+      lcd.clear();
+    }
+    if (digitalRead(B5) == HIGH) {  //Tetris's Theme Song
+      lcd.clear();
+      lcd.home();
+      lcd.write(0);
+      lcd.print("Tetris theme");
+      lcd.setCursor(0, 1);
+      lcd.print("Tetris ");
+      lcd.write(6);
+      tetris();
+      lcd.clear();
+    }
+    if (digitalRead(B6) == HIGH) {  //The Godfather theme
+      lcd.clear();
+      lcd.home();
+      lcd.write(0);
+      lcd.print("The Godfather");
+      lcd.setCursor(0, 1);
+      lcd.print("Nino Rota ");
+      lcd.write(3);
+      theGodfather();
+      lcd.clear();
+    }
+    statusD3 = digitalRead(DIPS3);
+
     if (!statusD1) { //Simon
       lcd.clear();
       lcd.setCursor(5, 0);
@@ -1876,73 +2178,10 @@ void verificaModo () {
       }
       break;
     }
-    if (!statusD2) { //Presskill
-      lcd.clear();
-      presskill();
-      statusD2 = digitalRead(DIPS2);
-      break;
-    }
-    if (!statusD3) { //Songs
-      lcd.clear();
-
-      while (!statusD3) {
-        lcd.setCursor(5, 0);
-        lcd.print("Music");
-        lcd.setCursor(5, 1);
-        lcd.print("Player");
-        apagaLeds();
-        furElise(); //B1
-        if (digitalRead(B2) == HIGH) { //silent night
-          lcd.clear();
-          lcd.print("Silent Night");
-          lcd.setCursor(0, 1);
-          lcd.print("Frank Sinatra");
-          silentNight();
-          lcd.clear();
-        }
-        if (digitalRead(B3) == HIGH) { //take on me
-          lcd.clear();
-          lcd.print("Take on me");
-          lcd.setCursor(0, 1);
-          lcd.print("A-HA");
-          takeOnMe();
-          lcd.clear();
-        }
-        if (digitalRead(B4) == HIGH) {  //The Godfather theme
-          lcd.clear();
-          lcd.print("The Godfather");
-          lcd.setCursor(0, 1);
-          lcd.print("Nino Rota");
-          theGodfather();
-          lcd.clear();
-        }
-        if (digitalRead(B5) == HIGH) {  //Tetris's Theme Song
-          lcd.clear();
-          lcd.print("Tetris theme");
-          lcd.setCursor(0, 1);
-          lcd.print("Tetris");
-          tetris();
-          lcd.clear();
-        }
-        if (digitalRead(B6) == HIGH) {  //Brahms
-          lcd.clear();
-          lcd.print("Wiegenlied");
-          lcd.setCursor(0, 1);
-          lcd.print("Johannes Brahms");
-          brahms();
-          lcd.clear();
-        }
-        statusD3 = digitalRead(DIPS3);
-      }
-      break;
-    }
-    if (!statusD4) { //DJ
-      lcd.clear();
-      lcd.setCursor(7, 0);
-      lcd.print("DJ");
+    if (!statusD2) {
       apagaLeds();
 
-      while (!statusD4) {
+      while (!statusD2) {
         if (digitalRead(B1) == HIGH) {
           tone(BUZZER,392);  
           digitalWrite(LED_AZUL, HIGH);  
@@ -1989,20 +2228,30 @@ void verificaModo () {
           digitalWrite(LED_VERDE, LOW);
           digitalWrite(LED_VERMELHO, LOW);
         }
-        statusD4 = digitalRead(DIPS4);
+        statusD2 = digitalRead(DIPS2);
       }
       break;
     }
   }
 }
 
-void encerraJogo() {
+void encerraJogo () {
   stateB5 = digitalRead(B5);
 
   if (stateB5) {
     apagaLeds();
     exit(0);
   }
+}
+
+void baratinha () {
+  lcd.clear();
+  lcd.home();
+  lcd.print("1)SIMON  3)SONGS");
+  lcd.setCursor(0, 1);
+  lcd.print("2)PRESSKILL 4)DJ");
+
+  verificaModo(); 
 }
 
 
@@ -2015,8 +2264,8 @@ void setup() {
   recorde = EEPROM.read(enderecoRecorde);
 
 
-  // CONFIGURACAO INICIAL DO LCD ***********************
-  lcd.init();  // initialize the lcd
+  // CONFIGURACAO INICIAL DO LCD
+  lcd.begin();  // initialize the lcd
   lcd.backlight();
   // lcd.setCursor(COLUNA, LINHA);
   lcd.setCursor(5, 0);
@@ -2044,6 +2293,15 @@ void setup() {
   pinMode(DIPS3, INPUT_PULLUP);
   pinMode(DIPS4, INPUT_PULLUP);
 
+  //criar caracter especial
+  lcd.createChar(0, play);
+  lcd.createChar(1, snow);
+  lcd.createChar(3, caveira);
+  lcd.createChar(4, notaMusical1);
+  lcd.createChar(5, notaMusical2);
+  lcd.createChar(6, tetrisLCD);
+  lcd.createChar(7, maquina);
+
 
   // Console serial
   Serial.begin(9600);
@@ -2058,16 +2316,6 @@ void setup() {
 
 // the loop function runs over and over again forever
 void loop() {
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("1)SIMON  3)SONGS");
-  lcd.setCursor(0, 1);
-  lcd.print("2)PRESSKILL 4)DJ");
-
-  verificaModo(); //Verifica o dip switch e inicia modo escolhido
-
-  // ACENDE|APAGA OS LEDS - LOW:apaga, HIGH:acende
+  baratinha();
 }
-
-
 
