@@ -5,10 +5,12 @@
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 
-#define B1 26   //aumenta 
-#define B2 25   //diminui
-#define B3 27   //enter
-
+#define B1 14   //aumenta
+#define B2 27   //diminui
+#define B3 26   //start
+#define B4 25   //tirar
+#define B5 33   //tirar
+#define B6 32   //tirar
 #define BUZZER 19
 
 #define ledVd 16
@@ -227,7 +229,18 @@ void takeOnMe () { //toca Take On Me
     NOTE_FS5,8, NOTE_FS5,8,NOTE_D5,8, NOTE_B4,8, REST,8, NOTE_B4,8, REST,8, NOTE_E5,8, 
     REST,8, NOTE_E5,8, REST,8, NOTE_E5,8, NOTE_GS5,8, NOTE_GS5,8, NOTE_A5,8, NOTE_B5,8,
     NOTE_A5,8, NOTE_A5,8, NOTE_A5,8, NOTE_E5,8, REST,8, NOTE_D5,8, REST,8, NOTE_FS5,8, 
-    REST,8, NOTE_FS5,8, REST,8, NOTE_FS5,8, NOTE_E5,8, NOTE_E5,8, NOTE_FS5,8, NOTE_E5,8,  
+    REST,8, NOTE_FS5,8, REST,8, NOTE_FS5,8, NOTE_E5,8, NOTE_E5,8, NOTE_FS5,8, NOTE_E5,8,
+    /*NOTE_FS5,8, NOTE_FS5,8,/*NOTE_D5,8, NOTE_B4,8, REST,8, NOTE_B4,8, REST,8, NOTE_E5,8, 
+        
+    REST,8, NOTE_E5,8, REST,8, NOTE_E5,8, NOTE_GS5,8, NOTE_GS5,8, NOTE_A5,8, NOTE_B5,8,
+    NOTE_A5,8, NOTE_A5,8, NOTE_A5,8, NOTE_E5,8, REST,8, NOTE_D5,8, REST,8, NOTE_FS5,8, 
+    REST,8, NOTE_FS5,8, REST,8, NOTE_FS5,8, NOTE_E5,8, NOTE_E5,8, NOTE_FS5,8, NOTE_E5,8,
+    NOTE_FS5,8, NOTE_FS5,8,NOTE_D5,8, NOTE_B4,8, REST,8, NOTE_B4,8, REST,8, NOTE_E5,8, 
+    REST,8, NOTE_E5,8, REST,8, NOTE_E5,8, NOTE_GS5,8, NOTE_GS5,8, NOTE_A5,8, NOTE_B5,8,
+        
+    NOTE_A5,8, NOTE_A5,8, NOTE_A5,8, NOTE_E5,8, REST,8, NOTE_D5,8, REST,8, NOTE_FS5,8, 
+    REST,8, NOTE_FS5,8, REST,8, NOTE_FS5,8, NOTE_E5,8, NOTE_E5,8, NOTE_FS5,8, NOTE_E5,8,*/
+        
   };
 
   // sizeof gives the number of bytes, each int value is composed of two bytes (16 bits)
@@ -292,7 +305,7 @@ void converte () { //converte as vidas do usuário em string para printar no lcd
 }
 
 void numAleatorio () {  //gera um número aleatório
-  numSecreto = random(11);
+  numSecreto = random(10);
 }
 
 void debounceStart () {  //impede que haja leituras erradas do botão start
@@ -325,7 +338,7 @@ void verificaResposta () {  //verifica a resposta do usuário
 }
 
 void reiniciaJogo () {  //função para reinciar o jogo
-  numAleatorio();
+  numSecreto = 0;
   numUsuario = 0;
   vidas = 5;
   erros = 0;
@@ -333,6 +346,10 @@ void reiniciaJogo () {  //função para reinciar o jogo
   resultado = 0;
 
   apagaLeds(ledVm, ledVd, ledAz);
+}
+
+void fechaJogo () {   //função que chama função exit(0);
+  exit(0);
 }
 
 void ganhaJogo () { //função para quando ganhar o jogo
@@ -468,6 +485,11 @@ void verificaBotao () { //verifica se algum botão foi pressionado
     }
     debounceStart();
   }
+
+  if (digitalRead(B4) == HIGH) {
+    som();
+    fechaJogo();
+  }
 }
 
 void jogo () {
@@ -484,7 +506,9 @@ void setup() {
   pinMode(B1, INPUT);
   pinMode(B2, INPUT);
   pinMode(B3, INPUT);
-
+  pinMode(B4, INPUT);
+  pinMode(B5, INPUT);
+  pinMode(B6, INPUT);
   pinMode(ledVd, OUTPUT);
   pinMode(ledVm, OUTPUT);
   pinMode(BUZZER, OUTPUT);
@@ -494,7 +518,7 @@ void setup() {
   Serial.println("inicio");
 
   // CONFIGURACAO INICIAL DO LCD ***********************
-  lcd.begin();  // initialize the lcd
+  lcd.init();  // initialize the lcd
   lcd.backlight();
   lcd.createChar(0, setaCima);
   lcd.createChar(1, setaBaixo);
@@ -529,6 +553,7 @@ void setup() {
   lcd.setCursor(7, 1);
   lcd.print(numUsuario);
 }
+
 
 // the loop function runs over and over again forever
 void loop() {
