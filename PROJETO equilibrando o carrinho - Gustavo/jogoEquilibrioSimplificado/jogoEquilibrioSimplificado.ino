@@ -167,34 +167,172 @@ void takeOnMe() {  //toca Take On Me (A-HA)  //TIRAR OQ N USA
     8,
     NOTE_E5,
     8,
+    NOTE_FS5,
+    8,
+    NOTE_FS5,
+    8,
+    NOTE_D5,
+    8,
+    NOTE_B4,
+    8,
+    REST,
+    8,
+    NOTE_B4,
+    8,
+    REST,
+    8,
+    NOTE_E5,
+    8,
+
+    REST,
+    8,
+    NOTE_E5,
+    8,
+    REST,
+    8,
+    NOTE_E5,
+    8,
+    NOTE_GS5,
+    8,
+    NOTE_GS5,
+    8,
+    NOTE_A5,
+    8,
+    NOTE_B5,
+    8,
+    NOTE_A5,
+    8,
+    NOTE_A5,
+    8,
+    NOTE_A5,
+    8,
+    NOTE_E5,
+    8,
+    REST,
+    8,
+    NOTE_D5,
+    8,
+    REST,
+    8,
+    NOTE_FS5,
+    8,
+    REST,
+    8,
+    NOTE_FS5,
+    8,
+    REST,
+    8,
+    NOTE_FS5,
+    8,
+    NOTE_E5,
+    8,
+    NOTE_E5,
+    8,
+    NOTE_FS5,
+    8,
+    NOTE_E5,
+    8,
+    NOTE_FS5,
+    8,
+    NOTE_FS5,
+    8,
+    NOTE_D5,
+    8,
+    NOTE_B4,
+    8,
+    REST,
+    8,
+    NOTE_B4,
+    8,
+    REST,
+    8,
+    NOTE_E5,
+    8,
+    REST,
+    8,
+    NOTE_E5,
+    8,
+    REST,
+    8,
+    NOTE_E5,
+    8,
+    NOTE_GS5,
+    8,
+    NOTE_GS5,
+    8,
+    NOTE_A5,
+    8,
+    NOTE_B5,
+    8,
+
+    NOTE_A5,
+    8,
+    NOTE_A5,
+    8,
+    NOTE_A5,
+    8,
+    NOTE_E5,
+    8,
+    REST,
+    8,
+    NOTE_D5,
+    8,
+    REST,
+    8,
+    NOTE_FS5,
+    8,
+    REST,
+    8,
+    NOTE_FS5,
+    8,
+    REST,
+    8,
+    NOTE_FS5,
+    8,
+    NOTE_E5,
+    8,
+    NOTE_E5,
+    8,
+    NOTE_FS5,
+    8,
+    NOTE_E5,
+    8,
   };
+
+
+
+
 
   int notes = sizeof(melody) / sizeof(melody[0]) / 2;
 
+  // this calculates the duration of a whole note in ms
   int wholenote = (60000 * 4) / tempo;
 
   int divider = 0, noteDuration = 0;
 
+  beep(10);
+  // iterate over the notes of the melody.
+  // Remember, the array is twice the number of notes (notes + durations)
   for (int thisNote = 0; thisNote < notes * 2; thisNote = thisNote + 2) {
 
+    // calculates the duration of each note
     divider = melody[thisNote + 1];
     if (divider > 0) {
+      // regular note, just proceed
       noteDuration = (wholenote) / divider;
     } else if (divider < 0) {
+      // dotted notes are represented with negative durations!!
       noteDuration = (wholenote) / abs(divider);
-      noteDuration *= 1.5;
+      noteDuration *= 1.5;  // increases the duration in half for dotted notes
     }
 
+    // we only play the note for 90% of the duration, leaving 10% as a pause
     tone(BUZZER_PIN, melody[thisNote], noteDuration * 0.9);
 
-    digitalWrite(LED_PIN, HIGH);
-
-    //adicionar função para piscar leds
-
+    // Wait for the specief duration before playing the next note.
     delay(noteDuration);
 
-    digitalWrite(LED_PIN, LOW);
-
+    // stop the waveform generation before the next note.
     noTone(BUZZER_PIN);
   }
 }
@@ -202,10 +340,7 @@ void takeOnMe() {  //toca Take On Me (A-HA)  //TIRAR OQ N USA
 
 void ganhaJogo(long tempoDecorrido) {
 
-  long recorde;
-  EEPROM.get(0, recorde);
-
-  digitalWrite(BUZZER_PIN, LOW);
+  long recorde = eeprom();
 
   display.clearDisplay();
   display.setCursor(25, 0);
@@ -219,19 +354,13 @@ void ganhaJogo(long tempoDecorrido) {
 
   display.display();
 
-
   // Grava um novo record
   if (tempoDecorrido < recorde) {
-    EEPROM.put(0, tempoDecorrido);
-    // TODO musica de novo record
-    // TODO takeOnMe(); TIRAR A RAMPA !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    eeprom(tempoDecorrido);  //grava o recorde
+    //takeOnMe(); // TODO musica de novo record // TIRAR A RAMPA
+    beep(14);
   } else {
-    // TODO musica de vitoria simples
-  }
-
-  // Prende na telinha de vitoria ate que o usuario altere a posicao da chave seletora
-  while (digitalRead(CHAVE1_PIN) == LOW) {
-    delay(500);
+    beep(3);  // TODO musica de vitoria simples
   }
 }
 
@@ -274,6 +403,12 @@ void jogo() {  //roda o modo de jogo baseado em durar mais tempo
     // Se o sensor de luz estiver abaixo de 300 e o tempo for maior que 4 segundos, o carro está equilibrado
     if (sensorluz < 1500 && ((millis() - millisTempoled) > 4000)) {
       ganhaJogo(tempoDecorrido);
+      digitalWrite(LED_PIN, LOW);
+
+      // Prende na telinha de vitoria ate que o usuario altere a posicao da chave seletora
+      while (digitalRead(CHAVE1_PIN) == LOW) {
+        delay(50);
+      }
 
     } else {
       // Se o sensor de luz estiver acima de 300, desliga o LED e atualiza o tempo
@@ -318,17 +453,11 @@ int cronometro(bool zerar) {       //faz a contagem do tempo e printa no lcd
   return tempoDecorrido;
 }
 
-
-
-
 void setup() {
   Serial.begin(9600);
 
-  //grava 99:59 (no formato long) para quando nao tem nada gravado ainda no arduino
-  //EEPROM.begin(4); //alocacao da EEPROM
-  //EEPROM.put(0, 5999); // 5999 equivale a 99:59
-  //long temp;
-  //EEPROM.get(0,temp);
+  EEPROM.begin(sizeof(int) + sizeof(int));  //alocacao da EEPROM
+  eeprom(59, 59);                           //grava 59:59 para quando nao tem nada gravado ainda no arduino
 
   microservo.attach(SERVO_PIN, 500, 2400);
 
@@ -364,12 +493,10 @@ void setup() {
   pinMode(CHAVE2_PIN, INPUT_PULLUP);
 }
 
-String converteTempo(int tempo) {
-
+String converteTempo(long tempo) {
   String resposta = "";
-
-  int minutos = tempo / 60;
-  int segundos = tempo % 60;
+  int minutos = int(tempo / 60);
+  int segundos = tempo - (minutos * 60);
 
   if (minutos < 10) {  //formata para exibir zeros a esquerda caso o numero seja menor que 10
     resposta += "0";
@@ -379,9 +506,41 @@ String converteTempo(int tempo) {
     resposta += "0";
   }
   resposta += String(segundos);
+
   return resposta;
 }
 
+void eeprom(int minutos, int segundos) {
+  EEPROM.write(0, minutos);
+  EEPROM.write(sizeof(int), segundos);
+}
+void eeprom(long valor) {
+  int minutos = int(valor / 60);
+  int segundos = valor - (minutos * 60);
+  eeprom(minutos, segundos);
+}
+long eeprom() {
+  int minutos = 0;
+  int segundos = 0;
+  //EEPROM.get(0,minutos);
+  //EEPROM.get(sizeof(int),segundos);
+  minutos = EEPROM.read(0);
+  segundos = EEPROM.read(sizeof(int));
+  return (long)((minutos * 60) + segundos);
+}
+
+void beep() {
+  beep(1);
+}
+
+void beep(int qtd) {
+  for (int i = 0; i < qtd; i++) {
+    digitalWrite(BUZZER_PIN, HIGH);
+    delay(100);
+    digitalWrite(BUZZER_PIN, LOW);
+    delay(100);
+  }
+}
 
 void loop() {
 
@@ -396,11 +555,10 @@ void loop() {
   } else if (digitalRead(CHAVE2_PIN) == LOW) {
     // MODO 2 - chave selecao direita
     // apenas mostra o record do jogo salvo na eprom
-
     display.clearDisplay();
     display.setCursor(5, 15);
     display.print("Recorde atual: ");
-    display.print(converteTempo(EEPROM.read(0)));
+    display.print(converteTempo(eeprom()));
     display.display();
 
     // Gambiarra para zerar o record do jogo gravado na EEPROM
@@ -410,23 +568,17 @@ void loop() {
     int fase = 0;
     while (fase < 4 && (digitalRead(CHAVE2_PIN) == LOW)) {
       potenciometroValor = map(analogRead(POTENTIOMETER_PIN), 2500, 0, 0, 10);
-      if (potenciometroValor == 0 && fase == 0) fase++;
-      if (potenciometroValor == 10 && fase == 1) fase++;
-      if (potenciometroValor == 0 && fase == 2) fase++;
-      if (potenciometroValor == 10 && fase == 3) fase++;
-      if (fase == 4) {
-        EEPROM.begin(4);      //alocacao da EEPROM
-        EEPROM.put(0, 5999);  // 5999 equivale a 99:59
-  	  	// 3 bips
-        for (int i = 0; i < 3; i++) {
-          digitalWrite(BUZZER_PIN, HIGH);
-          delay(500);
-          digitalWrite(BUZZER_PIN, LOW);
-          delay(500);
-        }
+      if ((potenciometroValor == 0 && (fase == 0 || fase == 2)) || (potenciometroValor == 10 && (fase == 1 || fase == 3))) {
+        beep();
+        fase++;
       }
-      delay(50);
+      if (fase == 4) {
+        eeprom(59, 59);
+        beep(3);
+      }
+      delay(100);
     }
+
 
   } else {
     // MODO 3 - chave selecao central
