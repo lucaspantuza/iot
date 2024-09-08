@@ -1,0 +1,14 @@
+#define BOTAO_AZUL 14
+#define BOTAO_AMARELO 12
+#define BOTAO_VERDE 35
+#define BOTAO_VERMELHO 32
+
+#define BUZZER_PIN 23
+
+#define BOTAO_SELECAO_DIR 16
+#define BOTAO_SELECAO_ESQ 17
+
+#define LED_AZUL 25
+#define LED_AMARELO 26
+#define LED_VERDE 33
+#define LED_VERMELHO 27
